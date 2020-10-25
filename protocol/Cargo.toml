@@ -1,14 +1,8 @@
 [package]
-name = "zusi"
+name = "zusi-protocol"
 version = "0.1.0"
 authors = ["Jannis Schaefer <j.schaefer@estwx.de>"]
 edition = "2018"
-
-[workspace]
-members = [
-    "protocol",
-]
-
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -17,4 +11,6 @@ proc-macro = true
 
 [dependencies]
 thiserror = "1"
-zusi-protocol = { path = "./protocol" }
+syn = { version = "1.0", features = ["default", "derive"]}
+quote = "1.0"
+proc-macro2 = "1.0"
