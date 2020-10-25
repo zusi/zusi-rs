@@ -10,8 +10,8 @@ pub struct Serializer {
 }
 
 pub fn to_bytes<T>(value: &T) -> Result<Vec<u8>>
-where
-    T: Serialize,
+    where
+        T: Serialize,
 {
     let mut serializer = Serializer {
         output: Default::default(),
@@ -46,7 +46,11 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_i16(self, v: i16) -> Result<Self::Ok> {
-        unimplemented!()
+        let mut bytes = v.to_le_bytes().to_vec();
+
+        self.output.append(&mut bytes);
+
+        Ok(())
     }
 
     fn serialize_i32(self, v: i32) -> Result<Self::Ok> {
@@ -62,7 +66,11 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_u16(self, v: u16) -> Result<Self::Ok> {
-        unimplemented!()
+        let mut bytes = v.to_le_bytes().to_vec();
+
+        self.output.append(&mut bytes);
+
+        Ok(())
     }
 
     fn serialize_u32(self, v: u32) -> Result<Self::Ok> {
@@ -98,8 +106,8 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_some<T: ?Sized>(self, value: &T) -> Result<Self::Ok>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
@@ -122,8 +130,8 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_newtype_struct<T: ?Sized>(self, name: &'static str, value: &T) -> Result<Self::Ok>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
@@ -135,8 +143,8 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         variant: &'static str,
         value: &T,
     ) -> Result<Self::Ok>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
@@ -172,6 +180,8 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn serialize_struct(self, name: &'static str, len: usize) -> Result<Self::SerializeStruct> {
+
+
         unimplemented!()
     }
 
@@ -186,8 +196,8 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     }
 
     fn collect_str<T: ?Sized>(self, value: &T) -> Result<Self::Ok>
-    where
-        T: Display,
+        where
+            T: Display,
     {
         unimplemented!()
     }
@@ -198,8 +208,8 @@ impl<'a> ser::SerializeSeq for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_element<T: ?Sized>(&mut self, value: &T) -> Result<()>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
@@ -214,8 +224,8 @@ impl<'a> ser::SerializeTuple for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_element<T: ?Sized>(&mut self, value: &T) -> Result<()>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
@@ -230,8 +240,8 @@ impl<'a> ser::SerializeTupleStruct for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_field<T: ?Sized>(&mut self, value: &T) -> Result<()>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
@@ -246,8 +256,8 @@ impl<'a> ser::SerializeTupleVariant for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_field<T: ?Sized>(&mut self, value: &T) -> Result<()>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
@@ -262,15 +272,15 @@ impl<'a> ser::SerializeMap for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_key<T: ?Sized>(&mut self, key: &T) -> Result<()>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
 
     fn serialize_value<T: ?Sized>(&mut self, value: &T) -> Result<()>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
@@ -285,8 +295,8 @@ impl<'a> ser::SerializeStruct for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_field<T: ?Sized>(&mut self, key: &'static str, value: &T) -> Result<()>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
@@ -301,8 +311,8 @@ impl<'a> ser::SerializeStructVariant for &'a mut Serializer {
     type Error = Error;
 
     fn serialize_field<T: ?Sized>(&mut self, key: &'static str, value: &T) -> Result<()>
-    where
-        T: Serialize,
+        where
+            T: Serialize,
     {
         unimplemented!()
     }
@@ -359,7 +369,7 @@ mod tests {
     fn test_u16() {
         let test = 5_u16;
 
-        let expected: Vec<u8> = vec![0x04, 0x00, 0x00, 0x00, 0x02, 0x00, 0x05, 0x00];
+        let expected: Vec<u8> = vec![0x05, 0x00];
 
         assert_eq!(to_bytes(&test).unwrap(), expected);
     }
