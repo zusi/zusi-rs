@@ -22,7 +22,11 @@ impl FieldAttrs {
             };
 
             for meta in &ml.nested {
-                let meta = if let Some(m) = errors.expect_nested_meta(meta) { m } else { continue; };
+                let meta = if let Some(m) = errors.expect_nested_meta(meta) {
+                    m
+                } else {
+                    continue;
+                };
 
                 let name = meta.path();
 
@@ -34,8 +38,8 @@ impl FieldAttrs {
                     errors.err(
                         &meta,
                         concat!(
-                        "Invalid field-level `zusi` attribute\n",
-                        "Expected one of: `id`",
+                            "Invalid field-level `zusi` attribute\n",
+                            "Expected one of: `id`",
                         ),
                     )
                 }
@@ -62,6 +66,7 @@ fn zusi_attr_to_meta_list(errors: &Errors, attr: &syn::Attribute) -> Option<syn:
     if !is_zusi_attribute(attr) {
         return None;
     }
+
     attr_to_meta_list(errors, attr)
 }
 

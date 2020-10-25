@@ -2,7 +2,7 @@ extern crate proc_macro;
 
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{Data, DeriveInput, parse_macro_input};
+use syn::{parse_macro_input, Data, DeriveInput};
 
 use crate::errors::Errors;
 use crate::parse_attrs::FieldAttrs;
@@ -66,7 +66,10 @@ fn impl_serialize_struct(errors: &Errors, name: &syn::Ident, ds: &syn::DataStruc
             return TokenStream::new();
         }
         syn::Fields::Unit => {
-            errors.err(&ds.struct_token, "#![derive(Serialize)]` cannot be applied to unit structs");
+            errors.err(
+                &ds.struct_token,
+                "#![derive(Serialize)]` cannot be applied to unit structs",
+            );
             return TokenStream::new();
         }
     };
@@ -77,7 +80,7 @@ fn impl_serialize_struct(errors: &Errors, name: &syn::Ident, ds: &syn::DataStruc
         .filter_map(|field| {
             let attrs = FieldAttrs::parse(errors, field);
             // StructField::new(errors, field, attrs)
-            return Some(attrs)
+            return Some(attrs);
         })
         .collect();
 
