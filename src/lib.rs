@@ -6,4 +6,3 @@ pub(self) use crate::error::{Error, Result};
 
 mod error;
 pub mod ser;
-
