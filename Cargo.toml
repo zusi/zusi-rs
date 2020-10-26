@@ -16,4 +16,5 @@ members = [
 
 [dependencies]
 thiserror = "1"
+num-traits = "0.2.12"
 zusi-protocol = { path = "./protocol" }
