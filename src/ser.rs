@@ -32,6 +32,7 @@ mod tests {
     use super::to_bytes;
     use super::Serialize;
 
+    #[allow(dead_code)]
     #[test]
     #[rustfmt::skip]
     fn test_struct() {
@@ -39,7 +40,7 @@ mod tests {
         struct Test {
             #[zusi(id=0x0001)]
             protokoll_version: u16,
-            #[zusi(id=0x0002)]
+            #[zusi(id=0x0021)]
             client_typ: u16,
             name: String,
             version: String,
