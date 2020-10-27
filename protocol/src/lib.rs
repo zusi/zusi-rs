@@ -1,243 +1,159 @@
+#![allow(unused_variables)]
+extern crate darling;
 extern crate proc_macro;
 
-use std::str::FromStr;
+use std::ops::Deref;
 
+use darling::ast::Data;
+use darling::util::SpannedValue;
+use darling::{ast, Error, FromDeriveInput, FromField};
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use syn::spanned::Spanned;
-use syn::{parse_macro_input, Data, DeriveInput};
+use syn::{parse_macro_input, DeriveInput};
 
-use crate::errors::Errors;
-use crate::parse_attrs::FieldAttrs;
+#[derive(Debug, FromDeriveInput)]
+struct MyTraitReceiver {
+    /// The struct ident.
+    ident: syn::Ident,
 
-mod errors;
-mod parse_attrs;
+    /// The type's generics. You'll need these any time your trait is expected
+    /// to work with types that declare generics.
+    generics: syn::Generics,
+
+    /// Receives the body of the struct or enum. We don't care about
+    /// struct fields because we previously told darling we only accept structs.
+    data: ast::Data<(), MyFieldReceiver>,
+}
+
+#[derive(Debug, FromField)]
+#[darling(attributes(zusi))]
+struct MyFieldReceiver {
+    /// Get the ident of the field. For fields in tuple or newtype structs or
+    /// enum bodies, this can be `None`.
+    ident: Option<syn::Ident>,
+
+    /// This magic field name pulls the type from the input.
+    ty: syn::Type,
+
+    /// We declare this as an `Option` so that during tokenization we can write
+    /// `field.volume.unwrap_or(derive_input.volume)` to facilitate field-level
+    /// overrides of struct-level settings.
+    #[darling(default)]
+    id: SpannedValue<Option<u16>>,
+}
 
 #[proc_macro_derive(Serialize, attributes(zusi))]
 pub fn serialize_derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let mut errors: Vec<Error> = vec![];
+
     let ast = parse_macro_input!(input as DeriveInput);
 
-    let gen = impl_serialize(&ast);
+    let receiver = MyTraitReceiver::from_derive_input(&ast).unwrap();
+
+    let mut gen = impl_serialize(&mut errors, &receiver);
+
+    gen.extend(Error::multiple(errors).write_errors());
 
     gen.into()
 }
 
-fn impl_serialize(input: &syn::DeriveInput) -> TokenStream {
-    let errors = &Errors::default();
-
-    if input.generics.params.len() != 0 {
-        errors.err(
-            &input.generics,
-            "`@![derive(Serialize)]` cannot be applied to types with generic parameters",
-        );
+fn impl_serialize(errors: &mut Vec<Error>, input: &MyTraitReceiver) -> TokenStream {
+    if input.generics.params.is_empty() {
+        errors.push(Error::custom("Blah"));
+        return TokenStream::new();
     }
 
     let name = &input.ident;
 
     let mut output = match &input.data {
-        Data::Struct(ds) => impl_serialize_struct(errors, &input.ident, ds),
-        Data::Enum(de) => impl_serialize_enum(errors, &input.ident, de),
-        Data::Union(_) => {
-            errors.err(input, "`@![derive(Serialize)]` cannot be applied to unions");
-            TokenStream::new()
-        }
+        Data::Struct(ds) => impl_serialize_struct(&input.ident, ds),
+        Data::Enum(de) => impl_serialize_enum(&input.ident, de),
     };
 
-    let mut gen = quote! {
+    output.extend(quote! {
       impl Serialize for #name {
         fn serialize<W: std::io::Write>(&self, writer: &mut W) {
 
         }
       }
-    };
+    });
 
-    errors.to_tokens(&mut gen);
-
-    gen
+    output
 }
 
-fn impl_serialize_struct(errors: &Errors, name: &syn::Ident, ds: &syn::DataStruct) -> TokenStream {
+fn impl_serialize_enum(name: &syn::Ident, ds: &Vec<()>) -> TokenStream {
+    unimplemented!()
+}
+
+fn impl_serialize_struct(name: &syn::Ident, ds: &ast::Fields<MyFieldReceiver>) -> TokenStream {
     // errors.err(name,"procastinating instead of doing Bachelor Thesis stuff");
 
-    let fields = match &ds.fields {
-        syn::Fields::Named(fields) => fields,
-        syn::Fields::Unnamed(_) => {
-            errors.err(
-                &ds.struct_token,
-                "`#![derive(Serialize)]` is not currently supported on tuple structs",
-            );
-            return TokenStream::new();
-        }
-        syn::Fields::Unit => {
-            errors.err(
-                &ds.struct_token,
-                "#![derive(Serialize)]` cannot be applied to unit structs",
-            );
-            return TokenStream::new();
-        }
-    };
+    // let fields = match &ds.fields {
+    //     syn::Fields::Named(fields) => fields,
+    //     syn::Fields::Unnamed(_) => {
+    //         // errors.err(
+    //         //     &name,
+    //         //     "`#![derive(Serialize)]` is not currently supported on tuple structs",
+    //         // );
+    //         return TokenStream::new();
+    //     }
+    // };
 
-    let fields: Vec<_> = fields
-        .named
-        .iter()
-        .filter_map(|field| {
-            let attrs = FieldAttrs::parse(errors, field);
-            // StructField::new(errors, field, attrs)
-            Some(attrs)
-        })
-        .collect();
+    // let fields: Vec<_> = ds.fields
+    //     .iter()
+    //     .filter_map(|field| {
+    //         // let attrs = FieldAttrs::parse(errors, field);
+    //         // StructField::new(errors, field, attrs)
+    //         Some(field)
+    //     })
+    //     .collect();
+
+    for field in &ds.fields {
+        if let Some(i) = field.id.deref() {
+            if *i > 20 {
+                return darling::Error::custom("meh")
+                    .with_span(&field.id.span())
+                    .write_errors();
+            }
+        }
+    }
 
     TokenStream::new()
 }
 
-/// The kind of optionality a parameter has.
-enum Optionality {
-    None,
-    Defaulted(TokenStream),
-    Optional,
-    Repeating,
-}
-
-impl PartialEq<Optionality> for Optionality {
-    fn eq(&self, other: &Optionality) -> bool {
-        use Optionality::*;
-        match (self, other) {
-            (None, None) | (Optional, Optional) | (Repeating, Repeating) => true,
-            // NB: (Defaulted, Defaulted) can't contain the same token streams
-            _ => false,
-        }
-    }
-}
-
-impl Optionality {
-    /// Whether or not this is `Optionality::None`
-    fn is_required(&self) -> bool {
-        if let Optionality::None = self {
-            true
-        } else {
-            false
-        }
-    }
-}
-
-/// A field of a `#![derive(Zusi)]` struct with attributes and some other
-/// notable metadata appended.
-struct StructField<'a> {
-    /// The original parsed field
-    field: &'a syn::Field,
-    /// The parsed attributes of the field
-    attrs: FieldAttrs,
-    /// The field name. This is contained optionally inside `field`,
-    /// but is duplicated non-optionally here to indicate that all field that
-    /// have reached this point must have a field name, and it no longer
-    /// needs to be unwrapped.
-    name: &'a syn::Ident,
-    /// If `field.ty` is `Vec<T>` or `Option<T>`, this is `T`, otherwise it's `&field.ty`.
-    /// This is used to enable consistent parsing code between optional and non-optional
-    /// keyed and subcommand fields.
-    ty_without_wrapper: &'a syn::Type,
-    /// Whether the field represents an optional value, such as an `Option` subcommand field
-    /// or an `Option` or `Vec` keyed argument, or if it has a `default`.
-    optionality: Optionality,
-}
-
-impl<'a> StructField<'a> {
-    // Attempts to parse a field of a `#[derive(FromArgs)]` struct, pulling out the
-    // fields required for code generation.
-    // fn new(errors: &Errors, field: &'a syn::Field, attrs: FieldAttrs) -> Option<Self> {
-    //     let name = field.ident.as_ref().expect("missing ident for named field");
-    //
-    //     // Ensure that one "kind" is present (switch, option, subcommand, positional)
-    //     let kind = if let Some(field_type) = &attrs.field_type {
-    //         field_type.kind
-    //     } else {
-    //         errors.err(
-    //             field,
-    //             concat!(
-    //             "Missing `argh` field kind attribute.\n",
-    //             "Expected one of: `switch`, `option`, `subcommand`, `positional`",
-    //             ),
-    //         );
-    //         return None;
-    //     };
-    //
-    //     // Parse out whether a field is optional (`Option` or `Vec`).
-    //     let optionality;
-    //     let ty_without_wrapper;
-    //     match kind {
-    //         FieldKind::Switch => {
-    //             if !ty_expect_switch(errors, &field.ty) {
-    //                 return None;
-    //             }
-    //             optionality = Optionality::Optional;
-    //             ty_without_wrapper = &field.ty;
-    //         }
-    //         FieldKind::Option | FieldKind::Positional => {
-    //             if let Some(default) = &attrs.default {
-    //                 let tokens = match TokenStream::from_str(&default.value()) {
-    //                     Ok(tokens) => tokens,
-    //                     Err(_) => {
-    //                         errors.err(&default, "Invalid tokens: unable to lex `default` value");
-    //                         return None;
-    //                     }
-    //                 };
-    //                 // Set the span of the generated tokens to the string literal
-    //                 let tokens: TokenStream = tokens
-    //                     .into_iter()
-    //                     .map(|mut tree| {
-    //                         tree.set_span(default.span().clone());
-    //                         tree
-    //                     })
-    //                     .collect();
-    //                 optionality = Optionality::Defaulted(tokens);
-    //                 ty_without_wrapper = &field.ty;
-    //             } else {
-    //                 let mut inner = None;
-    //                 optionality = if let Some(x) = ty_inner(&["Option"], &field.ty) {
-    //                     inner = Some(x);
-    //                     Optionality::Optional
-    //                 } else if let Some(x) = ty_inner(&["Vec"], &field.ty) {
-    //                     inner = Some(x);
-    //                     Optionality::Repeating
-    //                 } else {
-    //                     Optionality::None
-    //                 };
-    //                 ty_without_wrapper = inner.unwrap_or(&field.ty);
-    //             }
-    //         }
-    //         FieldKind::SubCommand => {
-    //             let inner = ty_inner(&["Option"], &field.ty);
-    //             optionality =
-    //                 if inner.is_some() { Optionality::Optional } else { Optionality::None };
-    //             ty_without_wrapper = inner.unwrap_or(&field.ty);
-    //         }
-    //     }
-    //
-    //     // Determine the "long" name of options and switches.
-    //     // Defaults to the kebab-case'd field name if `#[argh(long = "...")]` is omitted.
-    //     let long_name = match kind {
-    //         FieldKind::Switch | FieldKind::Option => {
-    //             let long_name = attrs
-    //                 .long
-    //                 .as_ref()
-    //                 .map(syn::LitStr::value)
-    //                 .unwrap_or_else(|| heck::KebabCase::to_kebab_case(&*name.to_string()));
-    //             if long_name == "help" {
-    //                 errors.err(field, "Custom `--help` flags are not supported.");
-    //             }
-    //             let long_name = format!("--{}", long_name);
-    //             Some(long_name)
-    //         }
-    //         FieldKind::SubCommand | FieldKind::Positional => None,
-    //     };
-    //
-    //     Some(StructField { field, attrs, kind, optionality, ty_without_wrapper, name, long_name })
-    // }
-}
-
-fn impl_serialize_enum(errors: &Errors, name: &syn::Ident, de: &syn::DataEnum) -> TokenStream {
-    unimplemented!()
+impl ToTokens for MyTraitReceiver {
+    fn to_tokens(&self, tokens: &mut TokenStream) {}
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use syn::parse_str;
+
+    use super::*;
+
+    #[test]
+    fn test_struct() {
+        let input = r#"#[derive(Serialize)]
+pub struct Foo {
+    #[zusi(id = 0x123)]
+    bar: bool,
+    baz: i64,
+}"#;
+
+        let parsed = parse_str(input).unwrap();
+        let receiver = MyTraitReceiver::from_derive_input(&parsed).unwrap();
+        let tokens = quote!(#receiver);
+
+        println!(
+            r#"
+INPUT:
+{}
+PARSED AS:
+{:?}
+EMITS:
+{}
+    "#,
+            input, receiver, tokens
+        );
+    }
+}
