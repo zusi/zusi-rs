@@ -19,8 +19,9 @@ pub trait Deserialize: Sized + Default {
 
     #[no_mangle]
     fn deserialize_struct<R>(reader: &mut R) -> Result<Self>
-        where
-        R: Read, {
+    where
+        R: Read,
+    {
         let _header = read_header(reader);
 
         Deserialize::deserialize(reader, 0)
