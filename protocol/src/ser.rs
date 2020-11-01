@@ -1,0 +1,116 @@
+use core::mem;
+use std::io;
+use std::io::Write;
+
+pub type Result<T> = core::result::Result<T, io::Error>;
+
+macro_rules! impl_serialize_for_num {
+    ($type:ty) => {
+        impl Serialize for $type {
+            fn serialize<W>(&self, writer: &mut W, id: u16) -> Result<()>
+            where
+                W: Write,
+            {
+                let len: u32 = mem::size_of::<$type>() as u32 + 2;
+
+                writer.write_all(&len.to_le_bytes())?;
+                writer.write_all(&id.to_le_bytes())?;
+                writer.write_all(&self.to_le_bytes())?;
+
+                // let mut res = length.to_le_bytes().to_vec();
+                // res.append(&mut field_id.to_le_bytes().to_vec());
+                // res.append(&mut self.to_le_bytes().to_vec());
+
+                // writer.write_all(&res);
+
+                Ok(())
+            }
+        }
+    };
+}
+
+impl_serialize_for_num!(u8);
+impl_serialize_for_num!(i8);
+impl_serialize_for_num!(u16);
+impl_serialize_for_num!(i16);
+impl_serialize_for_num!(u32);
+impl_serialize_for_num!(i32);
+impl_serialize_for_num!(u64);
+impl_serialize_for_num!(i64);
+impl_serialize_for_num!(f32);
+impl_serialize_for_num!(f64);
+
+/// Serializes a Node or Attribute to an io::Writer.
+pub trait Serialize {
+    fn serialize<W>(&self, writer: &mut W, id: u16) -> Result<()>
+    where
+        W: Write;
+}
+
+impl<T> Serialize for Option<T>
+where
+    T: Serialize,
+{
+    fn serialize<W>(&self, writer: &mut W, id: u16) -> Result<()>
+    where
+        W: Write,
+    {
+        if let Some(s) = &self {
+            s.serialize(writer, id)?;
+        }
+
+        Ok(())
+    }
+}
+
+impl<T> Serialize for Vec<T>
+where
+    T: Serialize,
+{
+    fn serialize<W>(&self, writer: &mut W, id: u16) -> Result<()>
+    where
+        W: Write,
+    {
+        for elem in self {
+            elem.serialize(writer, id)?;
+        }
+
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::to_bytes;
+    use crate::TestMessage;
+
+    #[test]
+    fn u8() {
+        let input: u16 = 5;
+
+        let expected: Vec<u8> = vec![0x04, 0x00, 0x00, 0x00, 0x02, 0x00, 0x05, 0x00];
+
+        assert_eq!(to_bytes(&input).unwrap(), expected);
+    }
+
+    #[test]
+    fn f32() {
+        let input: f32 = 5.3;
+
+        let expected: Vec<u8> = vec![0x06, 0x00, 0x00, 0x00, 0x02, 0x00, 0x9a, 0x99, 0xa9, 0x40];
+
+        assert_eq!(to_bytes(&input).unwrap(), expected);
+    }
+
+    #[test]
+    fn test_message() {
+        let input = TestMessage { field: 1 };
+
+        let expected: Vec<u8> = vec![
+            0, 0, 0, 0, 2, 0, 0x04, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0xFF, 0xFF, 0xFF,
+            0xFF,
+        ];
+
+        assert_eq!(to_bytes(&input).unwrap(), expected);
+    }
+}

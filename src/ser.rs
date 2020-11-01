@@ -3,8 +3,8 @@ use std::io::Write;
 use crate::Result;
 
 pub fn to_bytes<T>(value: &T) -> Result<Vec<u8>>
-where
-    T: Serialize,
+    where
+        T: Serialize,
 {
     // let mut serializer = Serializer {
     //     output: Default::default(),
@@ -21,16 +21,16 @@ where
 
 pub trait Serialize {
     fn serialize<W>(&self, writer: &mut W)
-    where
-        W: Write;
+        where
+            W: Write;
 }
 
 #[cfg(test)]
 mod tests {
-    use zusi_protocol::Serialize;
+    use zusi_protocol_derive::Serialize;
 
-    use super::to_bytes;
     use super::Serialize;
+    use super::to_bytes;
 
     #[allow(dead_code)]
     #[test]
@@ -38,9 +38,9 @@ mod tests {
     fn test_struct() {
         #[derive(Serialize)]
         struct Test {
-            #[zusi(id=0x0001)]
+            #[zusi(id = 0x0001)]
             protokoll_version: u16,
-            #[zusi(id=0x0021)]
+            #[zusi(id = 0x0002)]
             client_typ: u16,
             name: String,
             version: String,
