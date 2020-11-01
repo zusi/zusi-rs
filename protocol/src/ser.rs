@@ -79,6 +79,36 @@ where
     }
 }
 
+impl Serialize for String {
+    fn serialize<W>(&self, writer: &mut W, id: u16) -> Result<()>
+    where
+        W: Write,
+    {
+        let len = self.len() as u32 + 2;
+
+        writer.write_all(&len.to_le_bytes())?;
+        writer.write_all(&id.to_le_bytes())?;
+        writer.write_all(&self.as_bytes())?;
+
+        Ok(())
+    }
+}
+
+impl Serialize for &str {
+    fn serialize<W>(&self, writer: &mut W, id: u16) -> Result<()>
+    where
+        W: Write,
+    {
+        let len = self.len() as u32 + 2;
+
+        writer.write_all(&len.to_le_bytes())?;
+        writer.write_all(&id.to_le_bytes())?;
+        writer.write_all(&self.as_bytes())?;
+
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::to_bytes;
@@ -110,6 +140,24 @@ mod tests {
             0, 0, 0, 0, 2, 0, 0x04, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0xFF, 0xFF, 0xFF,
             0xFF,
         ];
+
+        assert_eq!(to_bytes(&input).unwrap(), expected);
+    }
+
+    #[test]
+    fn test_string() {
+        let input = "Bla".to_string();
+
+        let expected: Vec<u8> = vec![5, 0, 0, 0, 2, 0, 66, 108, 97];
+
+        assert_eq!(to_bytes(&input).unwrap(), expected);
+    }
+
+    #[test]
+    fn test_str() {
+        let input = "Bla";
+
+        let expected: Vec<u8> = vec![5, 0, 0, 0, 2, 0, 66, 108, 97];
 
         assert_eq!(to_bytes(&input).unwrap(), expected);
     }

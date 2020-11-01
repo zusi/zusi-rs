@@ -38,8 +38,8 @@ impl Serialize for TestMessage {
 }
 
 pub fn to_bytes<T>(value: &T) -> Result<Vec<u8>>
-    where
-        T: Serialize,
+where
+    T: Serialize,
 {
     let mut c = Vec::new();
 
