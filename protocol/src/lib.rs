@@ -1,8 +1,8 @@
 use std::io;
 use std::io::Write;
 
-pub use crate::ser::Serialize;
 pub use crate::de::Deserialize;
+pub use crate::ser::Serialize;
 
 pub mod de;
 pub mod ser;
