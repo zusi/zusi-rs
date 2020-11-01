@@ -1,7 +1,7 @@
-use zusi_protocol::{to_bytes, Serialize};
-use zusi_protocol_derive::Serialize;
+use zusi_protocol::{to_bytes, Deserialize, Serialize};
+use zusi_protocol_derive::{Deserialize, Serialize};
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Default, Debug)]
 struct HelloMsg {
     #[zusi(id = 0x0001)]
     protokoll_version: u16,
@@ -42,4 +42,8 @@ fn main() {
         0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
     ];
     assert_eq!(bts, expected);
+
+    let msg: HelloMsg = Deserialize::deserialize_struct(&mut &expected[..]).unwrap();
+
+    println!("{:?}", msg);
 }

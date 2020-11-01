@@ -48,22 +48,28 @@ fn impl_deserialize_struct(
             let field_name = field.ident.as_ref().unwrap();
 
             Some(quote! {
-                Serialize::serialize(&self.#field_name, writer, #field_id)?;
+                #field_id => { Deserialize::deserialize_in_place(reader, len, &mut node.#field_name)?; },
             })
         })
         .collect();
 
     let token_stream2 = quote! {
-        impl Serialize for #name {
-            fn deserialize<W: std::io::Write>(&self, writer: &mut W, id: u16) -> std::result::Result<(), std::io::Error> {
-                zusi_protocol::ser::write_node_header(writer, id)?;
+        impl Deserialize for #name {
+            fn deserialize<R: std::io::Read>(reader: &mut R, len: u32) -> std::result::Result<Self, std::io::Error> {
+                let mut node: Self = Default::default();
 
-                #(#fields)*
+                loop {
+                    let header = zusi_protocol::de::read_header(reader)?;
 
-                zusi_protocol::ser::write_node_end(writer)?;
-                // let mut #input = 0;
-
-                Ok(())
+                    match header {
+                        zusi_protocol::de::Header::StructEnd => return Ok(node),
+                        zusi_protocol::de::Header::Field { id, len } => match id {
+                            #(#fields)*
+                            // 0x0001 => {node.id.deserialize_field()}
+                            _ => {}
+                        },
+                    }
+                }
             }
         }
     };
