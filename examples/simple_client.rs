@@ -1,7 +1,7 @@
 extern crate zusi;
 
-use zusi::ser::{to_bytes, Serialize};
-use zusi_protocol::Serialize;
+use zusi::ser::{Serialize, to_bytes};
+use zusi_protocol_derive::Serialize;
 
 #[derive(Serialize)]
 struct HelloMsg {
