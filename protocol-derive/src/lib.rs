@@ -2,17 +2,12 @@
 extern crate darling;
 extern crate proc_macro;
 
-use std::any::Any;
-use std::fs::read_to_string;
-use std::ops::Deref;
-
-use darling::{ast, Error, FromDeriveInput, FromField};
 use darling::ast::{Data, Style};
-use darling::ast::Style::Struct;
 use darling::util::SpannedValue;
+use darling::{ast, Error, FromDeriveInput, FromField};
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{DeriveInput, parse_macro_input, Type};
+use syn::{parse_macro_input, DeriveInput, Type};
 
 #[derive(Debug, FromDeriveInput)]
 struct MyTraitReceiver {
@@ -68,18 +63,10 @@ fn impl_serialize(mut errors: &mut Vec<Error>, input: &MyTraitReceiver) -> Token
 
     let name = &input.ident;
 
-    let mut output = match &input.data {
+    let output = match &input.data {
         Data::Struct(ds) => impl_serialize_struct(&mut errors, &input.ident, ds),
         Data::Enum(de) => impl_serialize_enum(&input.ident, de),
     };
-
-    // output.extend(quote! {
-    //     impl Serialize for #name {
-    //         fn serialize<W: std::io::Write>(&self, writer: &mut W) {
-    //             let mut #input = 0;
-    //         }
-    //     }
-    // });
 
     output
 }
@@ -88,7 +75,11 @@ fn impl_serialize_enum(name: &syn::Ident, ds: &Vec<()>) -> TokenStream {
     unimplemented!()
 }
 
-fn impl_serialize_struct(errors: &mut Vec<Error>, name: &syn::Ident, ds: &ast::Fields<MyFieldReceiver>) -> TokenStream {
+fn impl_serialize_struct(
+    errors: &mut Vec<Error>,
+    name: &syn::Ident,
+    ds: &ast::Fields<MyFieldReceiver>,
+) -> TokenStream {
     // errors.err(name,"procastinating instead of doing Bachelor Thesis stuff");
 
     if ds.style != Style::Struct {
@@ -97,30 +88,36 @@ fn impl_serialize_struct(errors: &mut Vec<Error>, name: &syn::Ident, ds: &ast::F
         return TokenStream::new();
     }
 
-
-    let fields: Vec<_> = ds.fields
+    let fields: Vec<_> = ds
+        .fields
         .iter()
         .filter_map(|field| {
             let field_id = &field.id.unwrap_or_default();
             let field_name = field.ident.as_ref().unwrap();
             match &field.ty {
-                Type::Path(s) => {eprintln!("Hi")}
-                _ => {eprintln!("Hoe")}
+                Type::Path(s) => eprintln!("Hi"),
+                _ => eprintln!("Hoe"),
             }
 
             eprintln!("{:?}", field.ty);
 
             Some(quote! {
-                let bla = #field_id;
+                Serialize::serialize(&self.#field_name, writer, #field_id)?;
             })
         })
         .collect();
 
     let token_stream2 = quote! {
         impl Serialize for #name {
-            fn serialize<W: std::io::Write>(&self, writer: &mut W) {
+            fn serialize<W: std::io::Write>(&self, writer: &mut W, id: u16) -> std::result::Result<(), std::io::Error> {
+                zusi_protocol::ser::write_node_header(writer, id)?;
+
                 #(#fields)*
+
+                zusi_protocol::ser::write_node_end(writer)?;
                 // let mut #input = 0;
+
+                Ok(())
             }
         }
     };

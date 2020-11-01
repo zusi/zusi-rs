@@ -1,10 +1,15 @@
-use crate::ser::{Result, Serialize};
+use std::io;
 use std::io::Write;
 
-mod ser;
+use crate::ser::write_node_header;
+pub use crate::ser::Serialize;
 
-const NODE_START: [u8; 4] = [0; 4];
-const NODE_END: [u8; 4] = [0xFF; 4];
+pub mod ser;
+
+pub type Result<T> = core::result::Result<T, io::Error>;
+
+pub const NODE_START: [u8; 4] = [0; 4];
+pub const NODE_END: [u8; 4] = [0xFF; 4];
 
 pub fn bla(input: u16) {
     let bts = to_bytes(&input).unwrap();
@@ -23,6 +28,7 @@ impl Serialize for TestMessage {
     where
         W: Write,
     {
+        write_node_header(writer, id)?;
         // node header
         writer.write_all(&NODE_START)?;
         writer.write_all(&id.to_le_bytes())?;
@@ -43,7 +49,7 @@ where
 {
     let mut c = Vec::new();
 
-    value.serialize(&mut c, 0x02)?;
+    value.serialize(&mut c, 0x01)?;
     c.flush()?;
 
     Ok(c)

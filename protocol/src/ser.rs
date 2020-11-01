@@ -1,8 +1,7 @@
 use core::mem;
-use std::io;
 use std::io::Write;
 
-pub type Result<T> = core::result::Result<T, io::Error>;
+use crate::Result;
 
 macro_rules! impl_serialize_for_num {
     ($type:ty) => {
@@ -107,6 +106,25 @@ impl Serialize for &str {
 
         Ok(())
     }
+}
+
+pub fn write_node_header<W>(writer: &mut W, id: u16) -> Result<()>
+where
+    W: Write,
+{
+    writer.write_all(&crate::NODE_START)?;
+    writer.write_all(&id.to_le_bytes())?;
+
+    Ok(())
+}
+
+pub fn write_node_end<W>(writer: &mut W) -> Result<()>
+where
+    W: Write,
+{
+    writer.write_all(&crate::NODE_END)?;
+
+    Ok(())
 }
 
 #[cfg(test)]
