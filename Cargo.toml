@@ -16,7 +16,5 @@ members = [
 [lib]
 
 [dependencies]
-thiserror = "1"
-num-traits = "0.2.12"
 zusi-protocol-derive = { path = "protocol-derive" }
 zusi-protocol = { path = "protocol" }
