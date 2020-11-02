@@ -1,3 +1,4 @@
+use core::mem;
 use std::convert::TryInto;
 use std::io::Read;
 
@@ -35,10 +36,16 @@ macro_rules! impl_deserialize_for_num {
             where
                 R: Read,
             {
-                let mut bts = vec![0; length as usize];
-                reader.read_exact(&mut bts)?;
+                const SIZE: usize = mem::size_of::<$type>();
 
-                let result = Self::from_le_bytes(bts.try_into().unwrap());
+                if SIZE != length as usize {
+                    // todo add error type
+                    panic!();
+                }
+
+                let mut bts: [u8; SIZE] = [0; SIZE];
+                reader.read_exact(&mut bts)?;
+                let result = Self::from_le_bytes(bts);
 
                 Ok(result)
             }
