@@ -76,6 +76,43 @@ impl Deserialize for String {
     }
 }
 
+impl<T> Deserialize for Option<T>
+where
+    T: Deserialize,
+{
+    fn deserialize<R>(reader: &mut R, length: u32) -> Result<Self>
+    where
+        R: Read,
+    {
+        Ok(Some(Deserialize::deserialize(reader, length)?))
+    }
+}
+
+impl<T> Deserialize for Vec<T>
+where
+    T: Deserialize,
+{
+    fn deserialize<R>(reader: &mut R, length: u32) -> Result<Self>
+    where
+        R: Read,
+    {
+        // a bit funky to use this for a Vec, as it overwrites values which were added before.
+        // deserialize_in_place should be used when possible
+        let vec: Vec<T> = vec![Deserialize::deserialize(reader, length)?];
+
+        Ok(vec)
+    }
+
+    fn deserialize_in_place<R>(reader: &mut R, length: u32, place: &mut Self) -> Result<()>
+    where
+        R: Read,
+    {
+        place.push(Deserialize::deserialize(reader, length)?);
+
+        Ok(())
+    }
+}
+
 pub enum Header {
     StructEnd,
     Field { id: u16, len: u32 },
