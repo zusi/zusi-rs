@@ -4,6 +4,7 @@ use zusi_protocol::{Deserialize, Serialize};
 use zusi_protocol_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default, Debug)]
+#[zusi(id = 0x0001)]
 struct HelloMsg {
     #[zusi(id = 0x0001)]
     protokoll_version: u16,
