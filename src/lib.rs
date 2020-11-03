@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use zusi_protocol::{Deserialize, Serialize};
 use zusi_protocol_derive::{Deserialize, Serialize};
 
@@ -11,4 +13,11 @@ struct Message {
     verbindungsaufbau: Option<verbindungsaufbau::Verbindungsaufbau>,
     #[zusi(id = 0x0002)]
     fahrpult: Option<fahrpult::Fahrpult>,
+}
+
+pub fn send_verbindungsaufbau<W>(msg: verbindungsaufbau::Verbindungsaufbau, mut writer: &mut W) -> Result<(), std::io::Error>
+where W: Write {
+    msg.serialize(&mut writer, 0)?;
+
+    Ok(())
 }
