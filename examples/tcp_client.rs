@@ -1,27 +1,30 @@
+use std::io::BufReader;
 use std::net::TcpStream;
+use std::thread;
 
-use zusi::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
-use zusi_protocol::{Deserialize};
+use zusi::{receive_fahrpult, ZusiClientError};
 
-fn main() -> Result<(), std::io::Error> {
-    let mut stream = TcpStream::connect("127.0.0.1:1436")?;
+fn main() -> Result<(), ZusiClientError> {
+    let (stream, ack) = zusi::connect("127.0.0.1:1436")?;
 
-    let hello = Hello {
-        protokoll_version: 2,
-        client_typ: 2,
-        name: "Fahrpult".to_string(),
-        version: "2.0".to_string(),
-    };
+    println!("{}", ack.zusi_version);
 
-    let hello = Verbindungsaufbau {
-        hello: Some(hello),
-        ack_hello: None,
-    };
+    let reader = stream.try_clone()?;
+    let handle = thread::spawn(move || {
+        receiver_logger(reader).unwrap();
+    });
 
-    zusi::send_verbindungsaufbau(hello, &mut stream)?;
-    let msg: AckHello = Deserialize::deserialize_struct(&mut stream)?;
-
-    println!("{:?}", msg);
+    handle.join().unwrap();
 
     Ok(())
+}
+
+fn receiver_logger(stream: TcpStream) -> Result<(), ZusiClientError> {
+    let mut stream = BufReader::new(stream);
+
+    loop {
+        let msg = receive_fahrpult(&mut stream)?;
+
+        println!("{:?}", msg);
+    }
 }
