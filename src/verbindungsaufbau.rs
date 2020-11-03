@@ -37,7 +37,7 @@ pub struct AckHello {
     /// Der Client wurde akzeptiert, wenn das Byte auf 00 steht.
     /// Wird der Client nicht akzeptiert, wird stattdessen ein anderes Byte gesendet.
     /// Der Server bricht daraufhin die Verbindung ab.
-    pub error_code: Option<u8>,
+    pub error_code: u8,
     #[zusi(id = 0x0004)]
     /// Startdatum und -zeit des geladenen Fahrplans in Tagen seit 30.12.1899. Ist kein Fahrplan geladen, wird 0 geschickt
     pub fahrplan_start_zeit: Option<f64>,

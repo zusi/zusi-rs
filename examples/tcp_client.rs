@@ -1,7 +1,7 @@
 use std::net::TcpStream;
 
-use zusi::verbindungsaufbau::{AckHello, Hello};
-use zusi_protocol::{Deserialize, Serialize};
+use zusi::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
+use zusi_protocol::{Deserialize};
 
 fn main() -> Result<(), std::io::Error> {
     let mut stream = TcpStream::connect("127.0.0.1:1436")?;
@@ -13,7 +13,12 @@ fn main() -> Result<(), std::io::Error> {
         version: "2.0".to_string(),
     };
 
-    Serialize::serialize(&hello, &mut stream, 0x0001)?;
+    let hello = Verbindungsaufbau {
+        hello: Some(hello),
+        ack_hello: None,
+    };
+
+    zusi::send_verbindungsaufbau(hello, &mut stream)?;
     let msg: AckHello = Deserialize::deserialize_struct(&mut stream)?;
 
     println!("{:?}", msg);
