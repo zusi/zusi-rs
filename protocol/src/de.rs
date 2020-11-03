@@ -144,13 +144,14 @@ mod tests {
 
     #[test]
     fn test_read_header() {
-        let mut bts: Vec<u8> = vec![10, 0, 0, 0, 5, 0];
+        let bts: Vec<u8> = vec![10, 0, 0, 0, 5, 0];
 
         let result = read_header(&mut &bts[..]).unwrap();
 
         if let Header::Field { id, len } = result {
             assert_eq!(id, 5);
-            assert_eq!(len, 10);
+            // we subtract 2 from 10, as id is counted towards the size
+            assert_eq!(len, 8);
         } else {
             panic!("Header should be of type Attribute")
         }
@@ -158,9 +159,9 @@ mod tests {
 
     #[test]
     fn u8() {
-        let mut bts: Vec<u8> = vec![0x05];
+        let bts: Vec<u8> = vec![0x05];
 
-        let result: u8 = u8::deserialize(&mut &bts[..]).unwrap();
+        let result: u8 = u8::deserialize(&mut &bts[..], 1).unwrap();
 
         assert_eq!(result, 5)
     }
