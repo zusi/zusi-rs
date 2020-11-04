@@ -5,19 +5,19 @@ use zusi_protocol_derive::{Deserialize, Serialize};
 #[zusi(id = 0x0002)]
 /// Anwendung 02 ("Fahrpult")
 pub struct Fahrpult {
-    #[zusi(id = 0x0001)]
+    #[zusi(id = 0x0003)]
     /// 5.3.3.1 Befehl 00 03 - NEEDED_DATA (Client → Zusi)
     pub needed_data: Option<NeededData>,
-    #[zusi(id = 0x0002)]
+    #[zusi(id = 0x0004)]
     /// 5.3.3.2 Befehl 00 04 - ACK_NEEDED_DATA (Zusi → Client)
     pub ack_needed_data: Option<AckNeededData>,
-    #[zusi(id = 0x0003)]
+    #[zusi(id = 0x000A)]
     /// 5.3.3.3 Befehl 00 0A - DATA_FTD (Zusi → Client)
     pub data_ftd: Option<DataFtd>,
-    #[zusi(id = 0x0004)]
+    #[zusi(id = 0x000C)]
     /// 5.3.3.5 Befehl 00 0C - DATA_PROG (Zusi → Client)
     pub data_prog: Option<DataProg>,
-    #[zusi(id = 0x0005)]
+    #[zusi(id = 0x000B)]
     /// 5.3.3.7 Befehl 01 0B - CONTROL (Client → Zusi)
     pub control: Option<Control>,
 }
