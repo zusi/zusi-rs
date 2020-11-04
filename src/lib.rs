@@ -4,11 +4,12 @@ use std::net::ToSocketAddrs;
 
 use thiserror::Error;
 
+use zusi_protocol::de::Header;
 use zusi_protocol::{Deserialize, Serialize};
-use zusi_protocol_derive::{Deserialize, Serialize};
 
 use crate::fahrpult::Fahrpult;
 use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
+use crate::ZusiClientError::WrongMessageType;
 
 pub mod fahrpult;
 /// Nachrichten welche zum Verbindungsaufbau zwischen Client und Zusi benutzt werden.
@@ -19,12 +20,47 @@ mod integration_test;
 
 pub type Result<T> = std::result::Result<T, ZusiClientError>;
 
-#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
+#[derive(Default, Debug, PartialEq)]
 struct Message {
-    #[zusi(id = 0x0001)]
+    // #[zusi(id = 0x0001)]
     verbindungsaufbau: Option<verbindungsaufbau::Verbindungsaufbau>,
-    #[zusi(id = 0x0002)]
+    // #[zusi(id = 0x0002)]
     fahrpult: Option<fahrpult::Fahrpult>,
+}
+
+impl Serialize for Message {
+    fn serialize<W>(&self, writer: &mut W, _: u16) -> std::result::Result<(), std::io::Error>
+    where
+        W: Write,
+    {
+        Serialize::serialize(&self.verbindungsaufbau, writer, 0x0001)?;
+        Serialize::serialize(&self.fahrpult, writer, 0x0002)?;
+
+        Ok(())
+    }
+}
+
+impl Deserialize for Message {
+    fn deserialize<R>(reader: &mut R, _: u32) -> std::result::Result<Self, std::io::Error>
+    where
+        R: Read,
+    {
+        let mut node: Self = Default::default();
+
+        let header = zusi_protocol::de::read_header(reader)?;
+
+        if let Header::Field { id, len } = header {
+            match id {
+                0x0001 => {
+                    Deserialize::deserialize_in_place(reader, 0, &mut node.verbindungsaufbau)?
+                }
+                0x0002 => Deserialize::deserialize_in_place(reader, 0, &mut node.fahrpult)?,
+                _ => {}
+            }
+        }
+
+        Ok(node)
+    }
 }
 
 pub fn send_verbindungsaufbau<W>(
@@ -76,13 +112,24 @@ pub fn connect<A: ToSocketAddrs>(addr: A) -> Result<(TcpStream, AckHello)> {
     Ok((stream, ack))
 }
 
-pub fn receive_fahrpult<R>(mut reader: &mut R) -> Result<Fahrpult>
-where
-    R: Read,
-{
-    let msg: Message = Message::deserialize(&mut reader, 0)?;
+fn receive_message<R: Read>(mut reader: &mut R) -> Result<Message> {
+    Ok(Message::deserialize(&mut reader, 0)?)
+}
+
+pub fn receive_fahrpult<R: Read>(mut reader: &mut R) -> Result<Fahrpult> {
+    let msg: Message = receive_message(&mut reader)?;
 
     if let Some(m) = msg.fahrpult {
+        return Ok(m);
+    }
+
+    Err(ZusiClientError::WrongMessageType)
+}
+
+pub fn receive_verbindungsaufbau<R: Read>(mut reader: &mut R) -> Result<Verbindungsaufbau> {
+    let msg: Message = receive_message(&mut reader)?;
+
+    if let Some(m) = msg.verbindungsaufbau {
         return Ok(m);
     }
 

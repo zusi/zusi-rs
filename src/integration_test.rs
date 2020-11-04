@@ -305,12 +305,23 @@ fn test_beispiel_1_serialize() {
 
     let result = to_bytes(&msg).unwrap();
 
-    assert_eq!(result, BEISPIEL_1_BYTES);
+    if result != BEISPIEL_1_BYTES {
+        panic!(
+            r#"
+Expected:
+{:02X?}
+Result:
+{:02X?}
+"#,
+            BEISPIEL_1_BYTES, result
+        )
+    }
+    // assert_eq!(result, BEISPIEL_1_BYTES);
 }
 
 #[test]
 fn test_beispiel_1_deserialize() {
-    let result: Message = Message::deserialize(&mut &BEISPIEL_1_BYTES[..], 1).unwrap();
+    let result: Message = Message::deserialize(&mut &BEISPIEL_1_BYTES[..], 0).unwrap();
 
     assert_eq!(beispiel_1_msg(), result);
 }
