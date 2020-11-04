@@ -9,7 +9,6 @@ use zusi_protocol::{Deserialize, Serialize};
 
 use crate::fahrpult::Fahrpult;
 use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
-use crate::ZusiClientError::WrongMessageType;
 
 pub mod fahrpult;
 /// Nachrichten welche zum Verbindungsaufbau zwischen Client und Zusi benutzt werden.
