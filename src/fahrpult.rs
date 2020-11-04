@@ -1,7 +1,7 @@
 use zusi_protocol::{Deserialize, Serialize};
 use zusi_protocol_derive::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 #[zusi(id = 0x0002)]
 /// Anwendung 02 ("Fahrpult")
 pub struct Fahrpult {
@@ -22,7 +22,7 @@ pub struct Fahrpult {
     pub control: Option<Control>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.1 Befehl 00 03 - NEEDED_DATA (Client → Zusi)
 pub struct NeededData {
     #[zusi(id = 0x000A)]
@@ -33,29 +33,29 @@ pub struct NeededData {
     pub programmdaten: Option<Programmdaten>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct FuehrerstandsAnzeigen {
     #[zusi(id = 0x0001)]
     pub anzeigen: Vec<u16>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct FuehrerstandsBedienung {}
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct Programmdaten {
     #[zusi(id = 0x0001)]
     pub anzeigen: Vec<u16>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.2 Befehl 00 04 - ACK_NEEDED_DATA (Zusi → Client)
 pub struct AckNeededData {
     #[zusi(id = 0x0001)]
-    error_code: u8,
+    pub error_code: u8,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.3 Befehl 00 0A - DATA_FTD (Zusi → Client)
 pub struct DataFtd {
     #[zusi(id = 0x0001)]
@@ -356,7 +356,7 @@ pub struct DataFtd {
     pub steuerwagen_zug_und_brems_gesamtkraft_absolut_normiert: Option<f32>, // Single: 1 ((0...1) normiert auf aktuelle Fmax
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.3.2
 pub struct StatusNotbremssystem {
     #[zusi(id = 0x0001)]
@@ -371,7 +371,7 @@ pub struct StatusNotbremssystem {
     pub testmodus_aktiv: Option<u8>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.3.3
 pub struct StatusSifa {
     #[zusi(id = 0x0001)]
@@ -388,7 +388,7 @@ pub struct StatusSifa {
     pub sifa_luftabsperrhahn: Option<u8>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.3.4 Status Zugbeeinflussung
 pub struct StatusZugbeeinflussung {
     #[zusi(id = 0x0001)]
@@ -407,7 +407,7 @@ pub struct StatusZugbeeinflussung {
     pub zub_betriebsdaten: Option<ZubBetriebsdaten>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.3.3.4.2 Indusi Analogsysteme und Basisdaten
 pub struct IndusiEinstellungen {
     #[zusi(id = 0x0001)]
@@ -432,7 +432,7 @@ pub struct IndusiEinstellungen {
     pub luftabsperrhahn: Option<u8>, // Luftabsperrhahn 1: abgesperrt           2: offen
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct Zugdaten {
     #[zusi(id = 0x0001)]
     pub bremshundertstel: Option<u16>,
@@ -450,7 +450,7 @@ pub struct Zugdaten {
     pub klartextmeldungen: Option<u8>, // 0: Keine Klartextmeldungen möglich 1: Keine Klartextmeldungen möglich aber nicht aktiv 2: Klartextmeldungen aktiv 3: nur Klartextmeldungen möglich
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct IndusiZustand {
     #[zusi(id = 0x0002)]
     zugsicherung: Option<u16>, // 1: Ausgeschaltet 2: abgeschaltet/gestört (1000Hz blinkt) 3: Hauptluftleitung unter 2,2 bar (1000Hz blinkt) 4: Aufforderung zur Zugdateneingabe 5: Normalbetrieb 6: Funktionsprüfung
@@ -538,13 +538,13 @@ pub struct IndusiZustand {
     lm_zugart_rechts: Option<u8>, // PZB90 S-Bahn
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbAuftrag {
     #[zusi(id = 0x0001)]
     status: Option<u8>, // 1: eingeleitet 2: quittiert bei Vorsichtauftrag: 3: Fahrt auf Sicht (V40 Melder Dauerlicht)
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbUebertragungsausfall {
     #[zusi(id = 0x0001)]
     zielgeschwindigkeit: Option<f32>, // m/s
@@ -554,7 +554,7 @@ pub struct LzbUebertragungsausfall {
     zielweg: Option<f32>, // nur CIR-ELKE
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbNothalt {
     #[zusi(id = 0x0001)]
     status: Option<u8>, // 1: empfangen 2: überfahren 3: aufgehoben
@@ -562,19 +562,19 @@ pub struct LzbNothalt {
     wird_gesendet: Option<u8>, // 1: wird gesendet
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbRechnerausfall {
     #[zusi(id = 0x0001)]
     status: Option<u8>, // 1: alles dunkel 2: Befehlsmelder blinkt nach Neustart 3: Befehlsmelder Dauerlicht nach Quittierung
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbElAuftrag {
     #[zusi(id = 0x0001)]
     status: Option<u8>, // 1: Hauptschalter aus (EL Dauerlicht) 2: Stromabnehmer senken (EL Blinkt)
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbFunktionspruefung {
     #[zusi(id = 0x0001)]
     alle_melder_blinken: Option<EmptyNode>,
@@ -586,7 +586,7 @@ pub struct LzbFunktionspruefung {
     zwangsbremsung_aktiv: Option<EmptyNode>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EtcsEinstellungen {
     #[zusi(id = 0x0001)]
     zustand: Option<u8>, // Zusi -> Client
@@ -622,7 +622,7 @@ pub struct EtcsEinstellungen {
     info_ton_abspielen: Option<u8>, // Client -> Zusi: 1: Zusi soll den Info-Ton 1x abspielen
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EtcsStm {
     #[zusi(id = 0x0001)]
     stm_index: Option<u16>,
@@ -630,7 +630,7 @@ pub struct EtcsStm {
     stm_name: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EtcsZugdaten {
     #[zusi(id = 0x0001)]
     bremshundertstel: Option<u16>, // in %
@@ -648,13 +648,13 @@ pub struct EtcsZugdaten {
     tf_nummer: Option<u16>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EtcsSpec {
     #[zusi(id = 0x0001)]
     reibwert: Option<u8>, // 1: vermindert 2: nicht vermindert
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EtcsBetriebsdaten {
     #[zusi(id = 0x0001)]
     aktives_level: Option<u16>, // 0: Undefiniert 1: STM 2: 0 3: 1 4: 2 5: 3
@@ -721,13 +721,13 @@ pub struct EtcsBetriebsdaten {
     betriebszwangsbremsung: Option<u8>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EtcsStmInfo {
     #[zusi(id = 0x0001)]
     stm_index: Option<u16>, // Index des aktiven STM-System, von 1 beginnend gemäß Reihenfolge in der ftd-Datei
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EtcsLevelAnkuendigung {
     #[zusi(id = 0x0001)]
     neues_level: Option<u16>,
@@ -735,7 +735,7 @@ pub struct EtcsLevelAnkuendigung {
     quittierung: Option<u8>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EtcsModusAnkuendigung {
     #[zusi(id = 0x0001)]
     neuer_modus: Option<u16>,
@@ -743,13 +743,13 @@ pub struct EtcsModusAnkuendigung {
     quittierung: Option<u8>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EtcsFunkstatus {
     #[zusi(id = 0x0001)]
     zustand: Option<u8>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EtcsVorschaupunkt {
     #[zusi(id = 0x0001)]
     herkunft: Option<u16>, // 1: Strecke 3: Hauptsignal 9: Rangiersignal 14: ETCS
@@ -761,7 +761,7 @@ pub struct EtcsVorschaupunkt {
     hoehenwert: Option<f32>, // in m
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct ZubEinstellungen {
     #[zusi(id = 0x0001)]
     brh_wert: Option<u16>,
@@ -771,7 +771,7 @@ pub struct ZubEinstellungen {
     vmax: Option<u16>, // in km/h
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct ZubBetriebsdaten {
     #[zusi(id = 0x0001)]
     lm_gnt: Option<u8>,
@@ -797,7 +797,7 @@ pub struct ZubBetriebsdaten {
     betriebsbremsung_aktiv: Option<u8>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.3.5
 pub struct StatusTuersystem {
     #[zusi(id = 0x0001)]
@@ -838,7 +838,7 @@ pub struct StatusTuersystem {
     pub lm_gruenschleife: Option<u8>, // 1: an
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.3.6
 pub struct StatusFahrzeug {
     #[zusi(id = 0x0001)]
@@ -857,14 +857,14 @@ pub struct StatusFahrzeug {
     pub stellung_richtungsschalter: Option<u8>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.3.7
 pub struct StatusZugverband {
     #[zusi(id = 0x0001)]
     pub status_fahrzeug: Vec<Einzelfahrzeug>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct Einzelfahrzeug {
     #[zusi(id = 0x0001)]
     pub dateiname: Option<String>,
@@ -878,20 +878,20 @@ pub struct Einzelfahrzeug {
     pub vmax: Option<f32>, // m/s
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EfzZugbeeinflussungssystem {
     #[zusi(id = 0x0001)]
     pub bezeichnung: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.3.8 - Status Weichen
 pub struct StatusWeichen {
     #[zusi(id = 0x0001)]
     pub weichen: Vec<Weiche>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct Weiche {
     #[zusi(id = 0x0001)]
     pub bezeichnung: Option<String>,
@@ -909,7 +909,7 @@ pub struct Weiche {
 
 // 5.3.3.4 Befehl 00 0B - DATA_OPERATION (Zusi → Client)
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.5 Befehl 00 0C - DATA_PROG (Zusi → Client)
 pub struct DataProg {
     #[zusi(id = 0x0001)]
@@ -924,7 +924,7 @@ pub struct DataProg {
 
 // 5.3.3.6 Befehl 01 0A - INPUT (Client → Zusi)
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.3.7 Befehl 01 0B - CONTROL (Client → Zusi)
 pub struct Control {
     #[zusi(id = 0x0001)]
@@ -955,28 +955,28 @@ pub struct Control {
 
 // 5.3.3.8 Befehl 01 0C - GRAPHIC (Client → Zusi)
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct ShortNode {
     #[zusi(id = 0x0001)]
     pub control: Option<i16>, // -1: umschalten, 0: aus, 1: ein
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct SingleNode {
     #[zusi(id = 0x0001)]
     pub control: Option<f32>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct ControlFilename {
     #[zusi(id = 0x0001)]
     pub dateiname: Option<String>, // Dateiname des Zuges relativ zum Zusi-Verzeichnis. Wird ein Leerstring übermittelt, startet der zuletzt gefahrene Zug
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct EmptyNode {}
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct Train {
     #[zusi(id = 0x0001)]
     pub zugnummer: Option<String>,

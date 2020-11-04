@@ -1,7 +1,7 @@
 use zusi_protocol::{Deserialize, Serialize};
 use zusi_protocol_derive::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 #[zusi(id = 0x0001)]
 /// 5.3.2 Verbindungsaufbau
 pub struct Verbindungsaufbau {
@@ -13,7 +13,7 @@ pub struct Verbindungsaufbau {
     pub ack_hello: Option<AckHello>,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.2.1 Befehl 00 01 - HELLO (Client → Zusi)
 pub struct Hello {
     #[zusi(id = 0x0001)]
@@ -26,7 +26,7 @@ pub struct Hello {
     pub version: String,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 /// 5.3.2.2 Befehl 00 02 - ACK_HELLO (Zusi → Client)
 pub struct AckHello {
     #[zusi(id = 0x0001)]

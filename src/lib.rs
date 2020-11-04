@@ -14,9 +14,12 @@ pub mod fahrpult;
 /// Nachrichten welche zum Verbindungsaufbau zwischen Client und Zusi benutzt werden.
 pub mod verbindungsaufbau;
 
+#[cfg(test)]
+mod integration_test;
+
 pub type Result<T> = std::result::Result<T, ZusiClientError>;
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 struct Message {
     #[zusi(id = 0x0001)]
     verbindungsaufbau: Option<verbindungsaufbau::Verbindungsaufbau>,
@@ -32,6 +35,15 @@ where
     W: Write,
 {
     msg.serialize(&mut writer, 0)?;
+
+    Ok(())
+}
+
+pub fn send_fahrpult<W>(msg: fahrpult::Fahrpult, mut writer: &mut W) -> Result<()>
+where
+    W: Write,
+{
+    msg.serialize(&mut writer, 1)?;
 
     Ok(())
 }

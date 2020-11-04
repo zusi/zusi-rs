@@ -23,9 +23,14 @@ pub trait Deserialize: Sized + Default {
     where
         R: Read,
     {
-        let _header = read_header(reader);
+        let _header = read_header(reader)?;
 
-        Deserialize::deserialize(reader, 0)
+        let obj = Deserialize::deserialize(reader, 0)?;
+
+        let header = read_header(reader)?;
+        assert_eq!(header, Header::StructEnd);
+
+        Ok(obj)
     }
 }
 
@@ -113,6 +118,7 @@ where
     }
 }
 
+#[derive(PartialEq, Debug)]
 pub enum Header {
     StructEnd,
     Field { id: u16, len: u32 },
