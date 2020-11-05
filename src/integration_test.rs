@@ -1,8 +1,6 @@
-use zusi_protocol::{to_bytes, Deserialize, Serialize};
-
 use crate::fahrpult::{AckNeededData, DataFtd, Fahrpult, FuehrerstandsAnzeigen, NeededData};
 use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
-use crate::Message;
+use crate::{receive_message, send_fahrpult, send_verbindungsaufbau, Message};
 
 static BEISPIEL_1_BYTES: &'static [u8] = &[
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
@@ -303,7 +301,8 @@ fn beispiel_5_msg() -> Message {
 fn test_beispiel_1_serialize() {
     let msg = beispiel_1_msg();
 
-    let result = to_bytes(&msg).unwrap();
+    let mut result: Vec<u8> = Default::default();
+    send_verbindungsaufbau(msg.verbindungsaufbau.unwrap(), &mut result).unwrap();
 
     if result != BEISPIEL_1_BYTES {
         panic!(
@@ -321,7 +320,7 @@ Result:
 
 #[test]
 fn test_beispiel_1_deserialize() {
-    let result: Message = Message::deserialize(&mut &BEISPIEL_1_BYTES[..], 0).unwrap();
+    let result: Message = receive_message(&mut &BEISPIEL_1_BYTES[..]).unwrap();
 
     assert_eq!(beispiel_1_msg(), result);
 }
@@ -330,14 +329,15 @@ fn test_beispiel_1_deserialize() {
 fn test_beispiel_2_serialize() {
     let msg = beispiel_2_msg();
 
-    let result = to_bytes(&msg).unwrap();
+    let mut result: Vec<u8> = Default::default();
+    send_verbindungsaufbau(msg.verbindungsaufbau.unwrap(), &mut result).unwrap();
 
     assert_eq!(result, BEISPIEL_2_BYTES);
 }
 
 #[test]
 fn test_beispiel_2_deserialize() {
-    let result: Message = Message::deserialize(&mut &BEISPIEL_2_BYTES[..], 1).unwrap();
+    let result: Message = receive_message(&mut &BEISPIEL_2_BYTES[..]).unwrap();
 
     assert_eq!(beispiel_2_msg(), result);
 }
@@ -346,14 +346,15 @@ fn test_beispiel_2_deserialize() {
 fn test_beispiel_3_serialize() {
     let msg = beispiel_3_msg();
 
-    let result = to_bytes(&msg).unwrap();
+    let mut result: Vec<u8> = Default::default();
+    send_fahrpult(msg.fahrpult.unwrap(), &mut result).unwrap();
 
     assert_eq!(result, BEISPIEL_3_BYTES);
 }
 
 #[test]
 fn test_beispiel_3_deserialize() {
-    let result: Message = Message::deserialize(&mut &BEISPIEL_3_BYTES[..], 1).unwrap();
+    let result: Message = receive_message(&mut &BEISPIEL_3_BYTES[..]).unwrap();
 
     assert_eq!(beispiel_3_msg(), result);
 }
@@ -362,14 +363,15 @@ fn test_beispiel_3_deserialize() {
 fn test_beispiel_4_serialize() {
     let msg = beispiel_4_msg();
 
-    let result = to_bytes(&msg).unwrap();
+    let mut result: Vec<u8> = Default::default();
+    send_fahrpult(msg.fahrpult.unwrap(), &mut result).unwrap();
 
     assert_eq!(result, BEISPIEL_4_BYTES);
 }
 
 #[test]
 fn test_beispiel_4_deserialize() {
-    let result: Message = Message::deserialize(&mut &BEISPIEL_4_BYTES[..], 1).unwrap();
+    let result: Message = receive_message(&mut &BEISPIEL_4_BYTES[..]).unwrap();
 
     assert_eq!(beispiel_4_msg(), result);
 }
@@ -378,14 +380,15 @@ fn test_beispiel_4_deserialize() {
 fn test_beispiel_5_serialize() {
     let msg = beispiel_5_msg();
 
-    let result = to_bytes(&msg).unwrap();
+    let mut result: Vec<u8> = Default::default();
+    send_fahrpult(msg.fahrpult.unwrap(), &mut result).unwrap();
 
     assert_eq!(result, BEISPIEL_5_BYTES);
 }
 
 #[test]
 fn test_beispiel_5_deserialize() {
-    let result: Message = Message::deserialize(&mut &BEISPIEL_5_BYTES[..], 1).unwrap();
+    let result: Message = receive_message(&mut &BEISPIEL_5_BYTES[..]).unwrap();
 
     assert_eq!(beispiel_5_msg(), result);
 }

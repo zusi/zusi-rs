@@ -69,7 +69,7 @@ pub fn send_verbindungsaufbau<W>(
 where
     W: Write,
 {
-    msg.serialize(&mut writer, 0)?;
+    msg.serialize(&mut writer, 1)?;
 
     Ok(())
 }
@@ -78,7 +78,7 @@ pub fn send_fahrpult<W>(msg: fahrpult::Fahrpult, mut writer: &mut W) -> Result<(
 where
     W: Write,
 {
-    msg.serialize(&mut writer, 1)?;
+    msg.serialize(&mut writer, 2)?;
 
     Ok(())
 }
