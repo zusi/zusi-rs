@@ -10,5 +10,5 @@ edition = "2018"
 
 [dependencies]
 thiserror = "1.0"
-zusi-protocol-derive = { path = "../protocol-derive" }
-zusi-protocol = { path = "../protocol" }
+zusi-protocol-derive = { path = "../zusi-protocol-derive" }
+zusi-protocol = { path = "../zusi-protocol" }

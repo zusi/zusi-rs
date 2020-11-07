@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "protocol",
-    "protocol-derive",
+    "zusi-protocol",
+    "zusi-protocol-derive",
     "zusi-fahrpult",
 ]
