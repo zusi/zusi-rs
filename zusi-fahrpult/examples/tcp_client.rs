@@ -2,11 +2,11 @@ use std::io::BufReader;
 use std::net::TcpStream;
 use std::thread;
 
-use zusi::fahrpult::{Fahrpult, FuehrerstandsAnzeigen, NeededData};
-use zusi::{receive_fahrpult, ZusiClientError};
+use zusi_fahrpult::fahrpult::{Fahrpult, FuehrerstandsAnzeigen, NeededData};
+use zusi_fahrpult::{receive_fahrpult, ZusiClientError};
 
 fn main() -> Result<(), ZusiClientError> {
-    let (mut stream, ack) = zusi::connect("10.211.55.3:1436")?;
+    let (mut stream, ack) = zusi_fahrpult::connect("10.211.55.3:1436")?;
 
     println!("{}", ack.zusi_version);
 
@@ -31,7 +31,7 @@ fn main() -> Result<(), ZusiClientError> {
             control: None,
         };
 
-        zusi::send_fahrpult(needed_data, &mut stream)?;
+        zusi_fahrpult::send_fahrpult(needed_data, &mut stream)?;
     }
 
     handle.join().unwrap();

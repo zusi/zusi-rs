@@ -48,7 +48,7 @@ impl Deserialize for Message {
 
         let header = zusi_protocol::de::read_header(reader)?;
 
-        if let Header::Field { id, len } = header {
+        if let Header::Field { id, len: _ } = header {
             match id {
                 0x0001 => {
                     Deserialize::deserialize_in_place(reader, 0, &mut node.verbindungsaufbau)?
