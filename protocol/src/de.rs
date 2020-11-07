@@ -131,7 +131,7 @@ where
     let mut buf = [0; 4];
     reader.read_exact(&mut buf)?;
 
-    let mut len = u32::from_le_bytes(buf.try_into().unwrap());
+    let mut len = u32::from_le_bytes(buf);
     if len == 0xFFFFFFFF {
         return Ok(Header::StructEnd);
     } else if len > 2 {

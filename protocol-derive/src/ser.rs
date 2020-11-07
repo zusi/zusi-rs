@@ -13,15 +13,13 @@ pub(crate) fn impl_serialize(mut errors: &mut Vec<Error>, input: &MyTraitReceive
         return TokenStream::new();
     }
 
-    let output = match &input.data {
+    match &input.data {
         Data::Struct(ds) => impl_serialize_struct(&mut errors, &input.ident, ds),
         Data::Enum(de) => impl_serialize_enum(&input.ident, de),
-    };
-
-    output
+    }
 }
 
-fn impl_serialize_enum(_name: &syn::Ident, _ds: &Vec<()>) -> TokenStream {
+fn impl_serialize_enum(_name: &syn::Ident, _ds: &[()]) -> TokenStream {
     unimplemented!()
 }
 
@@ -39,13 +37,13 @@ fn impl_serialize_struct(
     let fields: Vec<_> = ds
         .fields
         .iter()
-        .filter_map(|field| {
+        .map(|field| {
             let field_id = &field.id.unwrap_or_default();
             let field_name = field.ident.as_ref().unwrap();
 
-            Some(quote! {
+            quote! {
                 Serialize::serialize(&self.#field_name, writer, #field_id)?;
-            })
+            }
         })
         .collect();
 
