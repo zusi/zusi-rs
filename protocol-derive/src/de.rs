@@ -17,15 +17,13 @@ pub(crate) fn impl_deserialize(
         return TokenStream::new();
     }
 
-    let output = match &input.data {
+    match &input.data {
         Data::Struct(ds) => impl_deserialize_struct(&mut errors, &input.ident, ds),
         Data::Enum(de) => impl_deserialize_enum(&input.ident, de),
-    };
-
-    output
+    }
 }
 
-fn impl_deserialize_enum(_name: &syn::Ident, _ds: &Vec<()>) -> TokenStream {
+fn impl_deserialize_enum(_name: &syn::Ident, _ds: &[()]) -> TokenStream {
     unimplemented!()
 }
 
@@ -43,13 +41,13 @@ fn impl_deserialize_struct(
     let fields: Vec<_> = ds
         .fields
         .iter()
-        .filter_map(|field| {
+        .map(|field| {
             let field_id = &field.id.unwrap_or_default();
             let field_name = field.ident.as_ref().unwrap();
 
-            Some(quote! {
+            quote! {
                 #field_id => { Deserialize::deserialize_in_place(reader, len, &mut node.#field_name)?; },
-            })
+            }
         })
         .collect();
 
