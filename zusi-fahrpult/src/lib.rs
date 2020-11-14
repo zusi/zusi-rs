@@ -9,6 +9,7 @@ use zusi_protocol::{Deserialize, Serialize};
 
 use crate::fahrpult::Fahrpult;
 use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
+use crate::ZusiClientError::WrongMessageType;
 
 pub mod fahrpult;
 /// Nachrichten welche zum Verbindungsaufbau zwischen Client und Zusi benutzt werden.
@@ -100,7 +101,12 @@ pub fn connect<A: ToSocketAddrs>(addr: A) -> Result<(TcpStream, AckHello)> {
     handshake.serialize(&mut stream, 0)?;
 
     // Receive ACK
-    let ack: AckHello = AckHello::deserialize_struct(&mut stream)?;
+    let msg = receive_verbindungsaufbau(&mut stream)?;
+    let ack = if let Some(msg) = msg.ack_hello {
+        msg
+    } else {
+        return Err(WrongMessageType);
+    };
 
     if ack.error_code != 0 {
         return Err(ZusiClientError::Connect {

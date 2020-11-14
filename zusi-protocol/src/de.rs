@@ -17,21 +17,6 @@ pub trait Deserialize: Sized + Default {
 
         Ok(())
     }
-
-    #[no_mangle]
-    fn deserialize_struct<R>(reader: &mut R) -> Result<Self>
-    where
-        R: Read,
-    {
-        let _header = read_header(reader)?;
-
-        let obj = Deserialize::deserialize(reader, 0)?;
-
-        let header = read_header(reader)?;
-        assert_eq!(header, Header::StructEnd);
-
-        Ok(obj)
-    }
 }
 
 macro_rules! impl_deserialize_for_num {
