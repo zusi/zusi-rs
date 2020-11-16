@@ -20,15 +20,11 @@ fn main() -> Result<(), ZusiClientError> {
             fuehrerstands_anzeigen: Some(FuehrerstandsAnzeigen {
                 anzeigen: vec![0x0001],
             }),
-            fuehrerstands_bedienung: None,
-            programmdaten: None,
+            ..Default::default()
         };
         let needed_data = Fahrpult {
             needed_data: Some(needed_data),
-            ack_needed_data: None,
-            data_ftd: None,
-            data_prog: None,
-            control: None,
+            ..Default::default()
         };
 
         zusi_fahrpult::send_fahrpult(needed_data, &mut stream)?;

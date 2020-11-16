@@ -96,7 +96,7 @@ pub fn connect<A: ToSocketAddrs>(addr: A) -> Result<(TcpStream, AckHello)> {
     };
     let handshake = Verbindungsaufbau {
         hello: Some(handshake),
-        ack_hello: None,
+        ..Default::default()
     };
     handshake.serialize(&mut stream, 0)?;
 
