@@ -83,13 +83,7 @@ impl Serialize for String {
     where
         W: Write,
     {
-        let len = self.len() as u32 + 2;
-
-        writer.write_all(&len.to_le_bytes())?;
-        writer.write_all(&id.to_le_bytes())?;
-        writer.write_all(&self.as_bytes())?;
-
-        Ok(())
+        self.as_str().serialize(writer, id)
     }
 }
 
