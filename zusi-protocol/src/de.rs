@@ -123,8 +123,9 @@ where
         len -= 2;
     }
 
-    reader.read_exact(&mut buf[0..2])?;
-    let id = u16::from_le_bytes(buf[..2].try_into().unwrap());
+    let mut buf = [0; 2];
+    reader.read_exact(&mut buf)?;
+    let id = u16::from_le_bytes(buf);
 
     Ok(Header::Field { id, len })
 }
