@@ -17,6 +17,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        run: cargo build
-      - name: Run tests
-        run: cargo test --workspace
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --all-features
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --workspace --all-features
+      - name: Bloat
+        uses: orf/cargo-bloat-action@v1
+        with:
+          bloat_args: --example tcp_client
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Clippy
+        uses: actions-rs/clippy@master
+        with:
+          args: --all-features
