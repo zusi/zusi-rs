@@ -10,17 +10,13 @@ macro_rules! impl_serialize_for_num {
             where
                 W: Write,
             {
-                let len: u32 = mem::size_of::<$type>() as u32 + 2;
+                const LEN: u32 = mem::size_of::<$type>() as u32 + 2;
 
-                writer.write_all(&len.to_le_bytes())?;
+                // according to benchmark its 3x faster to call writer.write_all three times, than
+                // to first copy everything into a slice or array and then write it all at once.
+                writer.write_all(&LEN.to_le_bytes())?;
                 writer.write_all(&id.to_le_bytes())?;
                 writer.write_all(&self.to_le_bytes())?;
-
-                // let mut res = length.to_le_bytes().to_vec();
-                // res.append(&mut field_id.to_le_bytes().to_vec());
-                // res.append(&mut self.to_le_bytes().to_vec());
-
-                // writer.write_all(&res);
 
                 Ok(())
             }
@@ -124,6 +120,7 @@ where
 #[cfg(test)]
 mod tests {
     use crate::to_bytes;
+
     // use crate::TestMessage;
 
     #[test]
