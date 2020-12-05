@@ -510,7 +510,7 @@ pub struct StatusZugbeeinflussung {
 /// 5.3.3.3.3.4.2 Indusi Analogsysteme und Basisdaten
 pub struct IndusiEinstellungen {
     #[zusi(id = 0x0001)]
-    /// Zugart:1: Zugart muss noch bestimmt werden 2: U 3: M 4: O	5: S-Bahn-Modus
+    /// Zugart:1: Zugart muss noch bestimmt werden 2: U 3: M 4: O 5: S-Bahn-Modus
     pub zugart: Option<u8>,
     #[zusi(id = 0x0002)]
     pub tf_nummer: Option<String>,
