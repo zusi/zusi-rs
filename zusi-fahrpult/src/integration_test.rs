@@ -246,23 +246,25 @@ fn test_beispiel_5_deserialize() {
 #[test]
 fn test_receive_all() {
     let mut msg: Vec<u8> = Default::default();
-
     msg.extend_from_slice(BEISPIEL_1_BYTES);
     msg.extend_from_slice(BEISPIEL_2_BYTES);
     msg.extend_from_slice(BEISPIEL_3_BYTES);
     msg.extend_from_slice(BEISPIEL_4_BYTES);
     msg.extend_from_slice(BEISPIEL_5_BYTES);
-
     let mut msg = Cursor::new(msg);
 
     let result: Message = receive_message(&mut msg).unwrap();
     assert_eq!(beispiel_1_msg(), result);
+
     let result: Message = receive_message(&mut msg).unwrap();
     assert_eq!(beispiel_2_msg(), result);
+
     let result: Message = receive_message(&mut msg).unwrap();
     assert_eq!(beispiel_3_msg(), result);
+
     let result: Message = receive_message(&mut msg).unwrap();
     assert_eq!(beispiel_4_msg(), result);
+
     let result: Message = receive_message(&mut msg).unwrap();
     assert_eq!(beispiel_5_msg(), result);
 
@@ -273,8 +275,7 @@ fn test_receive_all() {
 
 #[test]
 fn test_send_all() {
-    let result: Vec<u8> = Default::default();
-    let mut result = Cursor::new(result);
+    let mut result: Cursor<Vec<u8>> = Default::default();
 
     let msg = beispiel_1_msg();
     send_verbindungsaufbau(msg.verbindungsaufbau.unwrap(), &mut result).unwrap();
@@ -292,7 +293,6 @@ fn test_send_all() {
     send_fahrpult(msg.fahrpult.unwrap(), &mut result).unwrap();
 
     let mut expected: Vec<u8> = Default::default();
-
     expected.extend_from_slice(BEISPIEL_1_BYTES);
     expected.extend_from_slice(BEISPIEL_2_BYTES);
     expected.extend_from_slice(BEISPIEL_3_BYTES);
