@@ -115,9 +115,18 @@ where
 #[derive(PartialEq, Debug)]
 pub enum Header {
     StructEnd,
-    Field { id: u16, len: u32 },
+    Field {
+        id: u16,
+        /// When `len == 0` a struct follows.
+        len: u32,
+    },
 }
 
+/// Reads a Node or Attribute header
+///
+/// Header is composed of u32 length and u8 id.
+///
+/// When `len == 0` a struct follows and if `len == 0xFFFFFFFF` we are at the end of a struct.
 pub fn read_header<R>(reader: &mut R) -> Result<Header>
 where
     R: Read,
