@@ -81,17 +81,27 @@ impl<T> Deserialize for Vec<T>
 where
     T: Deserialize,
 {
+    /// # Warning
+    /// This function is a bit funky to use for a Vec.
+    /// By the nature of this TCP protocol, we don't know if a read value is the first or a
+    /// consecutive following value of the `Vec<T>`.
+    ///
+    /// The caller of this function has to handle the case of a `Vec<T>` with more than one value
+    /// and has to merge the returned `Vec<T>` with a single value with the values deserialized
+    /// before.
+    ///
+    /// When possible `deserialize_in_place` should be used instead, as that function has access
+    /// to the underlying object and can append the deserialized element.
     fn deserialize<R>(reader: &mut R, length: u32) -> Result<Self>
     where
         R: Read,
     {
-        // a bit funky to use this for a Vec, as it overwrites values which were added before.
-        // deserialize_in_place should be used when possible
         let vec: Vec<T> = vec![Deserialize::deserialize(reader, length)?];
 
         Ok(vec)
     }
 
+    /// Deserializes an element of `Vec<T>` and appends it to the current object.
     fn deserialize_in_place<R>(reader: &mut R, length: u32, place: &mut Self) -> Result<()>
     where
         R: Read,
