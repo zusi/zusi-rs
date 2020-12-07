@@ -72,6 +72,7 @@ fn beispiel_2_msg() -> Message {
                 zusi_verbindungsinfo: "0".to_string(),
                 error_code: 0,
                 fahrplan_start_zeit: Some(41390.5),
+                protokoll_version: None,
             }),
         }),
         fahrpult: None,

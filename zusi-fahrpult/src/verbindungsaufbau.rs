@@ -54,5 +54,5 @@ pub struct AckHello {
     pub fahrplan_start_zeit: Option<f64>,
     #[zusi(id = 0x0005)]
     /// Version des TCP-Protokolls
-    pub protokoll_version: String,
+    pub protokoll_version: Option<String>,
 }
