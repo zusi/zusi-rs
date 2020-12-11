@@ -728,10 +728,12 @@ pub struct StatusZugbeeinflussung {
     pub bauart: Option<String>,
 
     #[zusi(id = 0x0002)]
+    /// Indusi und LZB Einstellungen
     pub indusi_einstellungen: Option<IndusiEinstellungen>,
 
     #[zusi(id = 0x0003)]
-    pub indusi_zustand: Option<IndusiZustand>,
+    /// Indusi und LZB Betriebsdaten
+    pub indusi_betriebsdaten: Option<IndusiBetriebsdaten>,
 
     #[zusi(id = 0x0004)]
     pub etcs_einstellungen: Option<EtcsEinstellungen>,
@@ -759,6 +761,7 @@ pub struct IndusiEinstellungen {
     /// - 5: S-Bahn-Modus
     pub zugart: Option<u8>,
 
+    /// Tf-Nummer
     #[zusi(id = 0x0002)]
     pub tf_nummer: Option<String>,
 
@@ -766,12 +769,15 @@ pub struct IndusiEinstellungen {
     pub zugnummer: Option<String>,
 
     #[zusi(id = 0x0004)]
-    pub grunddaten: Option<Zugdaten>, // LZB
+    /// LZB-Grunddaten
+    pub grunddaten: Option<Zugdaten>,
 
     #[zusi(id = 0x0005)]
+    /// Werte der Ersatzzugdaten
     pub ersatzzugdaten: Option<Zugdaten>,
 
     #[zusi(id = 0x0006)]
+    /// Aktive Zugdaten
     pub aktive_zugdaten: Option<Zugdaten>,
 
     #[zusi(id = 0x0007)]
@@ -782,13 +788,17 @@ pub struct IndusiEinstellungen {
     pub hauptschalter: Option<u8>,
 
     #[zusi(id = 0x0008)]
-    /// Störschalter
+    /// PZB Störschalter
     ///
     /// - 1: Indusi abgeschaltet
     /// - 2: Indusi eingeschaltet
     pub pzb_stoerschalter: Option<u8>,
 
     #[zusi(id = 0x0009)]
+    /// LZB Störschalter
+    ///
+    /// - 1: LZB abgeschaltet
+    /// - 2: LZB eingeschaltet
     pub lzb_stoerschalter: Option<u8>,
 
     #[zusi(id = 0x000A)]
@@ -797,29 +807,60 @@ pub struct IndusiEinstellungen {
     /// - 1: abgesperrt
     /// - 2: offen
     pub luftabsperrhahn: Option<u8>,
+
+    #[zusi(id = 0x000B)]
+    /// Klartextmeldungen
+    ///
+    /// - 0: Keine Klartextmeldungen möglich
+    /// - 1: Klartextmeldungen möglich aber nicht aktiv
+    /// - 2: Klartextmeldungen aktiv
+    /// - 3: nur Klartextmeldungen möglich
+    pub klartextmeldungen: Option<u8>,
+
+    #[zusi(id = 0x000C)]
+    /// Funktionsprüfung starten **(nur Clent → Zusi)**
+    ///
+    /// 1: Zusi soll die Funktionsprüfung starten
+    /// 2: Funktionsprüfung wurde im Display als OK quittiert
+    /// 3: Funktionsprüfung wurde im Display als nicht i.O. quittiert
+    pub funktionspruefung_starten: Option<u8>,
 }
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct Zugdaten {
     #[zusi(id = 0x0001)]
+    /// BRH-Wert _(Bremshundertstel)_
     pub bremshundertstel: Option<u16>,
 
+    /// BRA-Wert _(Bremsart)_
     #[zusi(id = 0x0002)]
     pub bremsart: Option<u16>,
 
     #[zusi(id = 0x0003)]
-    /// LZB
+    /// ZL-Wert _(Zuglänge)_ in m
     pub zuglaenge: Option<u16>,
 
     #[zusi(id = 0x0004)]
-    /// LZB in km/h
+    /// VMZ-Wert _(Höchstgeschwindigkeit)_ in km/h
     pub vmax: Option<u16>,
 
+    /// Zugehörige Zugart:
+    ///
+    /// - 1: Zugart muss noch bestimmt werden
+    /// - 2: U
+    /// - 3: M
+    /// - 4: O
+    /// - 5: S-Bahn-Modus
     #[zusi(id = 0x0005)]
     pub zugart: Option<u8>,
 
     #[zusi(id = 0x0006)]
-    /// Nur relevant für AktiveZugdaten. 5: Ersatzzugdaten 6: Normalbetrieb
+    /// Nur relevant für AktiveZugdaten.
+    ///
+    /// - 0: Undefiniert
+    /// - 4: Grunddaten
+    /// - 5: Ersatzzugdaten
+    /// - 6: Normalbetrieb
     pub modus: Option<u8>,
 
     #[zusi(id = 0x000B)]
@@ -828,7 +869,7 @@ pub struct Zugdaten {
 }
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
-pub struct IndusiZustand {
+pub struct IndusiBetriebsdaten {
     #[zusi(id = 0x0002)]
     /// Zustand der Zugsicherung
     ///
@@ -884,45 +925,71 @@ pub struct IndusiZustand {
     /// - 2: Zwangsbremsung
     pub indusi_hupe: Option<u8>,
 
+    #[deprecated(note = "use lm_1000hz instead")]
     #[zusi(id = 0x000A)]
-    pub lm500hz: Option<u8>,
+    pub lm_500hz_bool: Option<u8>,
 
+    #[deprecated(note = "use lm_befehl instead")]
     #[zusi(id = 0x000B)]
-    pub lm_befehl: Option<u8>,
+    pub lm_befehl_bool: Option<u8>,
 
     #[zusi(id = 0x000C)]
-    /// PZB90 0: Normal 1: 1000Hz nach 700m 2: Restriktiv 3: Restriktiv+1000Hz 4: Restriktiv+500Hz 5: Prüfablauf nach LZB-Übertragungsausfall
+    /// PZB90
+    ///
+    /// - 0: Normal
+    /// - 1: 1000Hz nach 700m
+    /// - 2: Restriktiv
+    /// - 3: Restriktiv+1000Hz
+    /// - 4: Restriktiv+500Hz
+    /// - 5: Prüfablauf nach LZB-Übertragungsausfall
     pub zusatzinfo_melderbild: Option<u8>,
 
     #[zusi(id = 0x000D)]
-    /// LZB 0: Keine LZB-Führung 1: Normale Fahrt 2: Nothalt 3: LZB-Halt überfahren 4: Rechnerausfall 5: Nachfahrauftrag 6: Funktionsprüfung
+    /// LZB-Zustand
+    ///
+    /// - 0: Keine LZB-Führung
+    /// - 1: Normale Fahrt
+    /// - 2: Nothalt
+    /// - 3: LZB-Halt überfahren
+    /// - 4: Rechnerausfall
+    /// - 5: Nachfahrauftrag
+    /// - 6: Funktionsprüfung
     pub lzb: Option<u16>,
 
     #[zusi(id = 0x000E)]
+    /// Ende-Verfahren läuft
     pub lzb_ende_verfahren: Option<LzbAuftrag>,
 
     #[zusi(id = 0x000F)]
+    /// Ersatzauftrag aktiv
     pub lzb_ersatzauftrag: Option<LzbAuftrag>,
 
     #[zusi(id = 0x0010)]
+    /// Falschfahrauftrag aktiv
     pub lzb_falschfahrauftrag: Option<LzbAuftrag>,
 
     #[zusi(id = 0x0011)]
+    /// Vorsichtauftrag Aktiv
     pub lzb_vorsichtauftrag: Option<LzbAuftrag>,
 
     #[zusi(id = 0x0012)]
+    /// Fahrt über LZB-Halt per Befehl
     pub lzb_fahrt_ueber_halt_befehl: Option<LzbAuftrag>,
 
     #[zusi(id = 0x0013)]
+    /// LZB-Übertragungsausfall
     pub lzb_uebertragungsausfall: Option<LzbUebertragungsausfall>,
 
     #[zusi(id = 0x0014)]
+    /// LZB-Nothalt
     pub lzb_nothalt: Option<LzbNothalt>,
 
     #[zusi(id = 0x0015)]
+    /// LZB-Rechnerausfall
     pub lzb_rechnerausfall: Option<LzbRechnerausfall>,
 
     #[zusi(id = 0x0016)]
+    /// LZB-EL-Auftrag
     pub lzb_el_auftrag: Option<LzbElAuftrag>,
 
     #[zusi(id = 0x0017)]
@@ -986,17 +1053,20 @@ pub struct IndusiZustand {
     #[zusi(id = 0x0028)]
     pub lzb_funktionspruefung: Option<LzbFunktionspruefung>,
 
+    #[deprecated(note = "use lm_zugart_links instead")]
     #[zusi(id = 0x0029)]
     /// PZB90 S-Bahn
-    pub lm_zugart_links: Option<u8>,
+    pub lm_zugart_links_bool: Option<u8>,
 
+    #[deprecated(note = "use lm_zugart_65 instead")]
     #[zusi(id = 0x002A)]
     /// PZB90 S-Bahn
-    pub lm_zugart65: Option<u8>,
+    pub lm_zugart_65_bool: Option<u8>,
 
+    #[deprecated(note = "use lm_zugart_rechts instead")]
     #[zusi(id = 0x002B)]
     /// PZB90 S-Bahn
-    pub lm_zugart_rechts: Option<u8>,
+    pub lm_zugart_rechts_bool: Option<u8>,
 
     #[zusi(id = 0x002C)]
     /// 1000Hz beeinflussung erfolgt = 1
@@ -1017,23 +1087,101 @@ pub struct IndusiZustand {
     /// - 1: an
     /// - 2: blinkend
     pub lm_1000hz: Option<u8>,
+
+    #[zusi(id = 0x0030)]
+    /// Status Melder "Zugart O":
+    ///
+    /// - 0: aus
+    /// - 1: an
+    /// - 2: blinkend
+    pub lm_zugart_o: Option<u8>,
+
+    #[zusi(id = 0x0031)]
+    /// Status Melder "Zugart M":
+    ///
+    /// - 0: aus
+    /// - 1: an
+    /// - 2: blinkend
+    pub lm_zugart_m: Option<u8>,
+
+    #[zusi(id = 0x0032)]
+    /// Status Melder "Zugart U":
+    ///
+    /// - 0: aus
+    /// - 1: an
+    /// - 2: blinkend
+    pub lm_zugart_u: Option<u8>,
+
+    #[zusi(id = 0x0033)]
+    /// Status 500Hz-Melder:
+    ///
+    /// - 0: aus
+    /// - 1: an
+    /// - 2: blinkend
+    pub lm_500hz: Option<u8>,
+
+    #[zusi(id = 0x0034)]
+    /// Status Befehl-Melder:
+    ///
+    /// - 0: aus
+    /// - 1: an
+    /// - 2: blinkend
+    pub lm_befehl: Option<u8>,
+
+    #[zusi(id = 0x0035)]
+    /// Status "Zugart Rechts"-Melder:
+    ///
+    /// - 0: aus
+    /// - 1: an
+    /// - 2: blinkend
+    pub lm_zugart_rechts: Option<u8>,
+
+    #[zusi(id = 0x0036)]
+    /// Status "Zugart 65"-Melder:
+    ///
+    /// - 0: aus
+    /// - 1: an
+    /// - 2: blinkend
+    pub lm_zugart_65: Option<u8>,
+
+    #[zusi(id = 0x0037)]
+    /// Status "Zugart Links"-Melder:
+    ///
+    /// - 0: aus
+    /// - 1: an
+    /// - 2: blinkend
+    pub lm_zugart_links: Option<u8>,
 }
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbAuftrag {
     #[zusi(id = 0x0001)]
-    /// 1: eingeleitet 2: quittiert bei Vorsichtauftrag: 3: Fahrt auf Sicht (V40 Melder Dauerlicht)
+    /// Generischer LZB-Auftrag
+    ///
+    /// - 1: eingeleitet
+    /// - 2: quittiert
+    ///
+    /// Bei Vorsichtauftrag:
+    /// - 3: Fahrt auf Sicht (V40 Melder Dauerlicht)
     pub status: Option<u8>,
 }
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbUebertragungsausfall {
     #[zusi(id = 0x0001)]
-    /// m/s
+    /// Zielgeschwindigkeit in m/s
     pub zielgeschwindigkeit: Option<f32>,
 
     #[zusi(id = 0x0002)]
-    /// 1: eingeleitet 2: Ü Blinkt 3: erste Quittierung erfolt 4: Bedienung für 2. Quittierung gegeben 5: zweite Quittierung erfolgt 6: Ausfall nach verdeckter LZB Aufnahme (CE) 7: dito, Befehl blinkt
+    /// Status
+    ///
+    /// - 1: eingeleitet
+    /// - 2: Ü Blinkt
+    /// - 3: erste Quittierung erfolt
+    /// - 4: Bedienung für 2. Quittierung gegeben
+    /// - 5: zweite Quittierung erfolgt
+    /// - 6: Ausfall nach verdeckter LZB Aufnahme (CE)
+    /// - 7: dito, Befehl blinkt
     pub status: Option<u16>,
 
     #[zusi(id = 0x0003)]
@@ -1044,7 +1192,11 @@ pub struct LzbUebertragungsausfall {
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbNothalt {
     #[zusi(id = 0x0001)]
-    /// 1: empfangen 2: überfahren 3: aufgehoben
+    /// Status:
+    ///
+    /// - 1: empfangen
+    /// - 2: überfahren
+    /// - 3: aufgehoben
     pub status: Option<u8>,
 
     #[zusi(id = 0x0002)]
@@ -1055,14 +1207,21 @@ pub struct LzbNothalt {
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbRechnerausfall {
     #[zusi(id = 0x0001)]
-    /// 1: alles dunkel 2: Befehlsmelder blinkt nach Neustart 3: Befehlsmelder Dauerlicht nach Quittierung
+    /// LZB-Rechnerausfall Status
+    ///
+    /// - 1: alles dunkel
+    /// - 2: Befehlsmelder blinkt nach Neustart
+    /// - 3: Befehlsmelder Dauerlicht nach Quittierung
     pub status: Option<u8>,
 }
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 pub struct LzbElAuftrag {
     #[zusi(id = 0x0001)]
-    /// 1: Hauptschalter aus (EL Dauerlicht) 2: Stromabnehmer senken (EL Blinkt)
+    /// LZB-EL-Auftrag Status
+    ///
+    /// - 1: Hauptschalter aus (EL Dauerlicht)
+    /// - 2: Stromabnehmer senken (EL Blinkt)
     pub status: Option<u8>,
 }
 
