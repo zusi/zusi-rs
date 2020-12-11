@@ -6,12 +6,13 @@ authors = ["Jannis Schaefer <j.schaefer@estwx.de>"]
 license = "MIT OR Apache-2.0"
 edition = "2018"
 repository = "https://github.com/zusi/zusi-rs"
+readme = "../README.md"
 
 [lib]
 proc-macro = true
 
 [dependencies]
-syn = { version = "1.0", features = ["default", "derive"]}
+syn = { version = "1.0", features = ["default", "derive"] }
 quote = "1.0"
-darling = "0.10.2"
+darling = "0.10"
 proc-macro2 = "1.0"
