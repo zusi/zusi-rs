@@ -7,6 +7,9 @@ pub use crate::ser::Serialize;
 pub mod de;
 pub mod ser;
 
+#[cfg(feature = "async")]
+pub mod de_async;
+
 pub type Result<T> = core::result::Result<T, io::Error>;
 
 pub const NODE_START: [u8; 4] = [0; 4];
