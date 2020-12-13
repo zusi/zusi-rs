@@ -148,6 +148,29 @@ where
     Ok(Header::Field { id, len })
 }
 
+pub fn read_unknown_field<R>(reader: &mut R, header: Header) -> Result<()>
+where
+    R: Read,
+{
+    if let Header::Field { id, len } = header {
+        if len == 0 {
+            // we found a unknown struct and go recursive into it
+
+            while let Header::Field { id, len } = read_header(reader)? {
+                read_unknown_field(reader, Header::Field { id, len })?
+            }
+        } else {
+            let mut buf = vec![0; len as usize];
+            reader.read_exact(&mut buf)?;
+        }
+    } else {
+        // Error
+        return Ok(());
+    }
+
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use crate::de::{read_header, Deserialize, Header};
