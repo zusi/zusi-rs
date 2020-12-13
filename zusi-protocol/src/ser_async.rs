@@ -130,55 +130,54 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::to_bytes;
+    use async_std::io;
 
-    // use crate::TestMessage;
+    use crate::ser_async::SerializeAsync;
 
-    #[test]
-    fn u8() {
+    async fn to_bytes<T>(value: &T) -> Result<Vec<u8>, io::Error>
+    where
+        T: SerializeAsync,
+    {
+        let mut c = Vec::new();
+
+        value.serialize(&mut c, 0x01).await?;
+
+        Ok(c)
+    }
+
+    #[async_std::test]
+    async fn u8() {
         let input: u16 = 5;
 
         let expected: Vec<u8> = vec![0x04, 0x00, 0x00, 0x00, 0x01, 0x00, 0x05, 0x00];
 
-        assert_eq!(to_bytes(&input).unwrap(), expected);
+        assert_eq!(to_bytes(&input).await.unwrap(), expected);
     }
 
-    #[test]
-    fn f32() {
+    #[async_std::test]
+    async fn f32() {
         let input: f32 = 5.3;
 
         let expected: Vec<u8> = vec![0x06, 0x00, 0x00, 0x00, 0x01, 0x00, 0x9a, 0x99, 0xa9, 0x40];
 
-        assert_eq!(to_bytes(&input).unwrap(), expected);
+        assert_eq!(to_bytes(&input).await.unwrap(), expected);
     }
 
-    // #[test]
-    // fn test_message() {
-    //     let input = TestMessage { field: 1 };
-    //
-    //     let expected: Vec<u8> = vec![
-    //         0, 0, 0, 0, 2, 0, 0x04, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0xFF, 0xFF, 0xFF,
-    //         0xFF,
-    //     ];
-    //
-    //     assert_eq!(to_bytes(&input).unwrap(), expected);
-    // }
-
-    #[test]
-    fn test_string() {
+    #[async_std::test]
+    async fn test_string() {
         let input = "Bla".to_string();
 
         let expected: Vec<u8> = vec![5, 0, 0, 0, 1, 0, 66, 108, 97];
 
-        assert_eq!(to_bytes(&input).unwrap(), expected);
+        assert_eq!(to_bytes(&input).await.unwrap(), expected);
     }
 
-    #[test]
-    fn test_str() {
+    #[async_std::test]
+    async fn test_str() {
         let input = "Bla";
 
         let expected: Vec<u8> = vec![5, 0, 0, 0, 1, 0, 66, 108, 97];
 
-        assert_eq!(to_bytes(&input).unwrap(), expected);
+        assert_eq!(to_bytes(&input).await.unwrap(), expected);
     }
 }
