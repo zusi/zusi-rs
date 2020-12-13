@@ -9,6 +9,8 @@ pub mod ser;
 
 #[cfg(feature = "async")]
 pub mod de_async;
+#[cfg(feature = "async")]
+pub mod ser_async;
 
 pub type Result<T> = core::result::Result<T, io::Error>;
 
