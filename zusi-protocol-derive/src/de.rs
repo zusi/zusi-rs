@@ -64,7 +64,7 @@ fn impl_deserialize_struct(
                         zusi_protocol::de::Header::Field { id, len } => match id {
                             #(#fields)*
                             // 0x0001 => {node.id.deserialize_field()}
-                            _ => {}
+                            _ => { zusi_protocol::de::read_unknown_field(reader, zusi_protocol::de::Header::Field { id, len })?; }
                         },
                     }
                 }
