@@ -16,3 +16,10 @@ syn = { version = "1.0", features = ["default", "derive"] }
 quote = "1.0"
 darling = "0.10"
 proc-macro2 = "1.0"
+
+async-std = { version = "1.8.0", optional = true }
+
+[features]
+default = []
+async = ["async-std"]
+tokio03 = ["async-std/tokio03"]

@@ -14,3 +14,10 @@ readme = "../README.md"
 thiserror = "1.0"
 zusi-protocol-derive = { path = "../zusi-protocol-derive" }
 zusi-protocol = { path = "../zusi-protocol" }
+
+async-std = { version = "1.8.0", optional = true }
+
+[features]
+default = []
+async = ["async-std"]
+tokio03 = ["async-std/tokio03"]
