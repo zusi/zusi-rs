@@ -9,3 +9,4 @@ repository = "https://github.com/zusi/zusi-rs"
 readme = "../README.md"
 
 [dependencies]
+thiserror = "1.0"
