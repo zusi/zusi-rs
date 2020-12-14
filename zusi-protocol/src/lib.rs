@@ -31,5 +31,5 @@ pub enum ProtocolError {
     #[error("underlying transport error")]
     Io(#[from] io::Error),
     #[error("deserialization of message failed: {0}")]
-    Deserialization(&'static str),
+    Deserialization(String),
 }
