@@ -1,7 +1,9 @@
 use core::mem;
 use std::io::Read;
 
-use crate::Result;
+use log::warn;
+
+use crate::{ProtocolError, Result};
 
 pub trait Deserialize: Sized + Default {
     fn deserialize<R>(reader: &mut R, length: u32) -> Result<Self>
@@ -153,6 +155,8 @@ where
     R: Read,
 {
     if let Header::Field { id, len } = header {
+        warn!("reading unknown field {} with len={}", id, len);
+
         if len == 0 {
             // we found a unknown struct and go recursive into it
 
@@ -164,8 +168,9 @@ where
             reader.read_exact(&mut buf)?;
         }
     } else {
-        // Error
-        return Ok(());
+        return Err(ProtocolError::Deserialization(
+            "calling read_unknown_field is not supported nor useful",
+        ));
     }
 
     Ok(())
