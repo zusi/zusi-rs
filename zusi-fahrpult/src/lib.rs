@@ -5,7 +5,7 @@ use std::net::ToSocketAddrs;
 use thiserror::Error;
 
 use zusi_protocol::de::Header;
-use zusi_protocol::{Deserialize, Serialize};
+use zusi_protocol::{Deserialize, ProtocolError, Serialize};
 
 use crate::fahrpult::Fahrpult;
 use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
@@ -29,7 +29,7 @@ struct Message {
 }
 
 impl Serialize for Message {
-    fn serialize<W>(&self, writer: &mut W, _: u16) -> std::result::Result<(), std::io::Error>
+    fn serialize<W>(&self, writer: &mut W, _: u16) -> std::result::Result<(), ProtocolError>
     where
         W: Write,
     {
@@ -41,7 +41,7 @@ impl Serialize for Message {
 }
 
 impl Deserialize for Message {
-    fn deserialize<R>(reader: &mut R, _: u32) -> std::result::Result<Self, std::io::Error>
+    fn deserialize<R>(reader: &mut R, _: u32) -> std::result::Result<Self, ProtocolError>
     where
         R: Read,
     {
@@ -148,6 +148,11 @@ pub enum ZusiClientError {
     Io {
         #[from]
         source: std::io::Error,
+    },
+    #[error("TCP Client")]
+    Protocol {
+        #[from]
+        soruce: zusi_protocol::ProtocolError,
     },
     #[error("error code returned from server {error_code}")]
     Connect { error_code: u8 },

@@ -53,7 +53,7 @@ fn impl_deserialize_struct(
 
     let token_stream2 = quote! {
         impl Deserialize for #name {
-            fn deserialize<R: std::io::Read>(reader: &mut R, len: u32) -> std::result::Result<Self, std::io::Error> {
+            fn deserialize<R: std::io::Read>(reader: &mut R, len: u32) -> std::result::Result<Self, zusi_protocol::ProtocolError> {
                 let mut node: Self = Default::default();
 
                 loop {
