@@ -97,6 +97,87 @@ static BEISPIEL_3_BYTES: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
+static BEISPIEL_3_BYTES_WITH_UNKNOWN_ATTRIBUTE: &'static [u8] = &[
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x02, 0x00, // ID 0x0002: Client-Anwendung Typ 2 (Fahrpult)
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x03, 0x00, // ID 0x0003: NEEDED_DATA-Befehl
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x0A, 0x00, // ID x000A: Führerstandsanzeigen
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x00, // ID 0x0001: Führerstands ID
+    0x01, 0x00, // Nr. 1: Geschwindigkeit (Word)
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x0F, // ID 0x0F01: Unbekanntes Feld
+    0x34, 0x12, //
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x00, // ID 0x0001: Führerstands ID
+    0x1B, 0x00, // Nr. 1B: Schleudern (Word)
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+];
+
+static BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE: &'static [u8] = &[
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x02, 0x00, // ID 0x0002: Client-Anwendung Typ 2 (Fahrpult)
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x03, 0x00, // ID 0x0003: NEEDED_DATA-Befehl
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x0A, 0x00, // ID x000A: Führerstandsanzeigen
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x00, // ID 0x0001: Führerstands ID
+    0x01, 0x00, // Nr. 1: Geschwindigkeit (Word)
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x0F, 0x0F, // ID 0x0F0F: Unbekannter Knoten
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x0F, // ID 0x0F01: Unbekanntes Feld 1
+    0x34, 0x12, //
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x0A, // ID 0x0F01: Unbekanntes Feld 2
+    0x34, 0x12, //
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x00, // ID 0x0001: Führerstands ID
+    0x1B, 0x00, // Nr. 1B: Schleudern (Word)
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+];
+
+static BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED: &'static [u8] = &[
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x02, 0x00, // ID 0x0002: Client-Anwendung Typ 2 (Fahrpult)
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x03, 0x00, // ID 0x0003: NEEDED_DATA-Befehl
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x0A, 0x00, // ID x000A: Führerstandsanzeigen
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x00, // ID 0x0001: Führerstands ID
+    0x01, 0x00, // Nr. 1: Geschwindigkeit (Word)
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x0F, 0x0F, // ID 0x0F0F: Unbekannter Knoten
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x0F, // ID 0x0F01: Unbekanntes Feld 1
+    0x34, 0x12, //
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x0A, // ID 0x0F01: Unbekanntes Feld 2
+    0x34, 0x12, //
+    0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
+    0x0F, 0x0A, // ID 0x0F0F: Unbekannter Knoten
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x0F, // ID 0x0F01: Unbekanntes Feld 1
+    0x34, 0x12, //
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+    0x04, 0x00, 0x00, 0x00, // Länge 4 Bytes → es folgt ein Attribut
+    0x01, 0x00, // ID 0x0001: Führerstands ID
+    0x1B, 0x00, // Nr. 1B: Schleudern (Word)
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+    0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
+];
+
 fn beispiel_3_msg() -> Message {
     Message {
         verbindungsaufbau: None,
@@ -206,6 +287,27 @@ fn test_beispiel_3_serialize() {
 #[test]
 fn test_beispiel_3_deserialize() {
     let result: Message = receive_message(&mut &BEISPIEL_3_BYTES[..]).unwrap();
+
+    assert_eq!(beispiel_3_msg(), result);
+}
+
+#[test]
+fn test_beispiel_3_with_unknown_attribute_deserialize() {
+    let result: Message = receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_ATTRIBUTE[..]).unwrap();
+
+    assert_eq!(beispiel_3_msg(), result);
+}
+
+#[test]
+fn test_beispiel_3_with_unknown_node_deserialize() {
+    let result: Message = receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE[..]).unwrap();
+
+    assert_eq!(beispiel_3_msg(), result);
+}
+
+#[test]
+fn test_beispiel_3_with_unknown_node_nested_deserialize() {
+    let result: Message = receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED[..]).unwrap();
 
     assert_eq!(beispiel_3_msg(), result);
 }
