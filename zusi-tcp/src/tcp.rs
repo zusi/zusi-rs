@@ -1,4 +1,4 @@
-extern crate byteorder;
+use byteorder;
 
 use std::fmt;
 use std::io;

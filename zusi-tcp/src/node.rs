@@ -1,4 +1,4 @@
-extern crate byteorder;
+use byteorder;
 
 use std::io::Cursor;
 use std::io::Read;
