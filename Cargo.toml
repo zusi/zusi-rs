@@ -3,4 +3,5 @@ members = [
     "zusi-protocol",
     "zusi-protocol-derive",
     "zusi-fahrpult",
+    "zusi-tcp",
 ]
