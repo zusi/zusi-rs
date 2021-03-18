@@ -2,7 +2,6 @@ use byteorder;
 
 use self::byteorder::{ReadBytesExt, WriteBytesExt};
 use std::io::Cursor;
-use std::io::Read;
 use std::string::FromUtf8Error;
 
 type LE = self::byteorder::LittleEndian;

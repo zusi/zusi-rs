@@ -22,7 +22,7 @@ pub fn send_hello<T: Read + Write>(
                 Attribute::from_str(0x0004, client_version), // client version number
             ],
             children: vec![],
-        },],
+        }],
     }
     .send(stream)?;
     stream.flush()?;
@@ -115,7 +115,7 @@ pub fn send_needed_data<T: Read + Write>(
             id: 0x0003, // NEEDED_DATA
             attributes: vec![],
             children: needed_data,
-        },],
+        }],
     }
     .send(stream)?;
     stream.flush()?;
