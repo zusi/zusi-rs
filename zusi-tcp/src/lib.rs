@@ -15,13 +15,11 @@ mod tests {
         let n = node::Node {
             id: 0x0001,
             attributes: vec![a1],
-            children: vec![
-                node::Node {
-                    id: 0x0002,
-                    attributes: vec![a2],
-                    children: vec![],
-                }
-            ],
+            children: vec![node::Node {
+                id: 0x0002,
+                attributes: vec![a2],
+                children: vec![],
+            }],
         };
 
         assert_eq!(n.find_node(&[0x0001, 0x0002]).unwrap().id, 0x0002);
@@ -59,12 +57,24 @@ mod tests {
                     id: 0x0002,
                     attributes: vec![a1, a2],
                     children: vec![],
-                }
+                },
             ],
         };
 
-        assert!(n.find_node_cond(&[0x0001, 0x0002], |n: &node::Node| n.attributes.len() > 0).unwrap().attributes.len() > 0);
-        assert!(n.find_node_excl_cond(&[0x0002], |n: &node::Node| n.attributes.len() > 0).unwrap().attributes.len() > 0);
+        assert!(
+            n.find_node_cond(&[0x0001, 0x0002], |n: &node::Node| n.attributes.len() > 0)
+                .unwrap()
+                .attributes
+                .len()
+                > 0
+        );
+        assert!(
+            n.find_node_excl_cond(&[0x0002], |n: &node::Node| n.attributes.len() > 0)
+                .unwrap()
+                .attributes
+                .len()
+                > 0
+        );
     }
 
     #[test]
@@ -77,20 +87,36 @@ mod tests {
         let n = node::Node {
             id: 0x0001,
             attributes: vec![a1, a2],
-            children: vec![
-                node::Node {
-                    id: 0x0001,
-                    attributes: vec![a3, a4],
-                    children: vec![],
-                }
-            ],
+            children: vec![node::Node {
+                id: 0x0001,
+                attributes: vec![a3, a4],
+                children: vec![],
+            }],
         };
 
-        assert!(n.find_attribute(&[0x0001, 0x0042]).unwrap().as_u16().unwrap() == 0x0001);
+        assert!(
+            n.find_attribute(&[0x0001, 0x0042])
+                .unwrap()
+                .as_u16()
+                .unwrap()
+                == 0x0001
+        );
         assert!(n.find_attribute_excl(&[0x0042]).unwrap().as_u16().unwrap() == 0x0001);
 
-        assert!(n.find_attribute(&[0x0001, 0x0001, 0x0042]).unwrap().as_u16().unwrap() == 0x0003);
-        assert!(n.find_attribute_excl(&[0x0001, 0x0042]).unwrap().as_u16().unwrap() == 0x0003);
+        assert!(
+            n.find_attribute(&[0x0001, 0x0001, 0x0042])
+                .unwrap()
+                .as_u16()
+                .unwrap()
+                == 0x0003
+        );
+        assert!(
+            n.find_attribute_excl(&[0x0001, 0x0042])
+                .unwrap()
+                .as_u16()
+                .unwrap()
+                == 0x0003
+        );
 
         assert!(n.find_attribute(&[0x0001, 0x0001]).is_none());
         assert!(n.find_attribute_excl(&[0x0001]).is_none());

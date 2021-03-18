@@ -1,9 +1,9 @@
 use byteorder;
 
+use self::byteorder::{ReadBytesExt, WriteBytesExt};
 use std::io::Cursor;
 use std::io::Read;
 use std::string::FromUtf8Error;
-use self::byteorder::{WriteBytesExt, ReadBytesExt};
 
 type LE = self::byteorder::LittleEndian;
 
@@ -23,14 +23,29 @@ impl Node {
     /// value of `ids` etc., and its `n`th parent node is a child of `self`,
     /// where `n` equals `ids.len() - 1`.
     pub fn find_node_excl_cond<F>(&self, ids: &[u16], cond: F) -> Option<&Node>
-        where F: Fn(&Node) -> bool {
-        if ids.len() == 0 { if cond(&self) { Some(&self) } else { None } }
-        else {
+    where
+        F: Fn(&Node) -> bool,
+    {
+        if ids.len() == 0 {
+            if cond(&self) {
+                Some(&self)
+            } else {
+                None
+            }
+        } else {
             for c in self.children.iter().filter(|c| c.id == ids[0]) {
-                let res: Option<&Node> =
-                    if ids.len() == 1 { if cond(&c) { Some(c) } else { None } }
-                    else { c.find_node_excl(&ids[1..]) };
-                if res.is_some() { return res; }
+                let res: Option<&Node> = if ids.len() == 1 {
+                    if cond(&c) {
+                        Some(c)
+                    } else {
+                        None
+                    }
+                } else {
+                    c.find_node_excl(&ids[1..])
+                };
+                if res.is_some() {
+                    return res;
+                }
             }
             None
         }
@@ -54,11 +69,21 @@ impl Node {
     ///
     /// The ID path must contain at least one element.
     pub fn find_node_cond<F>(&self, ids: &[u16], cond: F) -> Option<&Node>
-        where F: Fn(&Node) -> bool {
+    where
+        F: Fn(&Node) -> bool,
+    {
         assert!(ids.len() >= 1);
-        if self.id != ids[0] { None }
-        else if ids.len() == 1 { if cond(&self) { Some(&self) } else { None } }
-        else { self.find_node_excl_cond(&ids[1..], cond) }
+        if self.id != ids[0] {
+            None
+        } else if ids.len() == 1 {
+            if cond(&self) {
+                Some(&self)
+            } else {
+                None
+            }
+        } else {
+            self.find_node_excl_cond(&ids[1..], cond)
+        }
     }
 
     /// Returns a node with ID path `ids[1..]` if it exists and
@@ -83,7 +108,9 @@ impl Node {
         if ids.len() > 1 {
             for c in self.children.iter().filter(|c| c.id == ids[0]) {
                 let res: Option<&Attribute> = c.find_attribute_excl(&ids[1..]);
-                if res.is_some() { return res; }
+                if res.is_some() {
+                    return res;
+                }
             }
             None
         } else {
@@ -128,36 +155,52 @@ impl Attribute {
     pub fn from_u16(id: u16, val: u16) -> Attribute {
         let mut result = Attribute {
             id: id,
-            value: vec!(),
+            value: vec![],
         };
-        result.value.write_u16::<LE>(val).ok().expect("Error writing u16 value to attribute.");
+        result
+            .value
+            .write_u16::<LE>(val)
+            .ok()
+            .expect("Error writing u16 value to attribute.");
         result
     }
 
     pub fn from_u32(id: u16, val: u32) -> Attribute {
         let mut result = Attribute {
             id: id,
-            value: vec!(),
+            value: vec![],
         };
-        result.value.write_u32::<LE>(val).ok().expect("Error writing u32 value to attribute.");
+        result
+            .value
+            .write_u32::<LE>(val)
+            .ok()
+            .expect("Error writing u32 value to attribute.");
         result
     }
 
     pub fn from_i16(id: u16, val: i16) -> Attribute {
         let mut result = Attribute {
             id: id,
-            value: vec!(),
+            value: vec![],
         };
-        result.value.write_i16::<LE>(val).ok().expect("Error writing i16 value to attribute.");
+        result
+            .value
+            .write_i16::<LE>(val)
+            .ok()
+            .expect("Error writing i16 value to attribute.");
         result
     }
 
     pub fn from_f32(id: u16, val: f32) -> Attribute {
         let mut result = Attribute {
             id: id,
-            value: vec!(),
+            value: vec![],
         };
-        result.value.write_f32::<LE>(val).ok().expect("Error writing f32 value to attribute.");
+        result
+            .value
+            .write_f32::<LE>(val)
+            .ok()
+            .expect("Error writing f32 value to attribute.");
         result
     }
 
