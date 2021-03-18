@@ -7,50 +7,50 @@ use std::io::Write;
 
 use self::byteorder::{ReadBytesExt, WriteBytesExt};
 
-use node::Node;
-use node::Attribute;
+use crate::node::Node;
+use crate::node::Attribute;
 
 type LE = self::byteorder::LittleEndian;
 
 pub trait TcpSendable : fmt::Debug {
-    fn send(&self, stream: &mut Write) -> io::Result<()>;
+    fn send(&self, stream: &mut dyn Write) -> io::Result<()>;
 }
 
 impl TcpSendable for Node {
-    fn send(&self, stream: &mut Write) -> io::Result<()> {
-        try!(stream.write(&[0x00; 4])); // PACKET_LENGTH == 0x00000000 denotes a node
-        try!(stream.write_u16::<LE>(self.id));
+    fn send(&self, stream: &mut dyn Write) -> io::Result<()> {
+        r#try!(stream.write(&[0x00; 4])); // PACKET_LENGTH == 0x00000000 denotes a node
+        r#try!(stream.write_u16::<LE>(self.id));
         for attr in &self.attributes {
-            try!(attr.send(stream));
+            r#try!(attr.send(stream));
         }
         for child in &self.children {
-            try!(child.send(stream));
+            r#try!(child.send(stream));
         }
-        try!(stream.write(&[0xFF; 4]));
+        r#try!(stream.write(&[0xFF; 4]));
         Ok(())
     }
 }
 
 impl TcpSendable for Attribute {
-    fn send(&self, stream: &mut Write) -> io::Result<()> {
-        try!(stream.write_u32::<LE>((self.value.len() as u32) + 2));
-        try!(stream.write_u16::<LE>(self.id));
-        try!(stream.write(&self.value));
+    fn send(&self, stream: &mut dyn Write) -> io::Result<()> {
+        r#try!(stream.write_u32::<LE>((self.value.len() as u32) + 2));
+        r#try!(stream.write_u16::<LE>(self.id));
+        r#try!(stream.write(&self.value));
         Ok(())
     }
 }
 
-pub fn receive(stream: &mut Read) -> io::Result<Node> {
-    let len = try!(stream.read_u32::<LE>());
+pub fn receive(stream: &mut dyn Read) -> io::Result<Node> {
+    let len = r#try!(stream.read_u32::<LE>());
     assert_eq!(len, 0);
     receive_node(stream)
 }
 
-fn receive_node(stream: &mut Read) -> io::Result<Node> {
-    let id = try!(stream.read_u16::<LE>());
+fn receive_node(stream: &mut dyn Read) -> io::Result<Node> {
+    let id = r#try!(stream.read_u16::<LE>());
     let mut result = Node { id: id, attributes: vec![], children: vec![] };
     loop {
-        let len = try!(stream.read_u32::<LE>());
+        let len = r#try!(stream.read_u32::<LE>());
         if len == 0x00000000 {
             // node
             match receive_node(stream) {
@@ -63,7 +63,7 @@ fn receive_node(stream: &mut Read) -> io::Result<Node> {
         } else {
             // attribute
             let mut attr = Attribute {
-                id: try!(stream.read_u16::<LE>()),
+                id: r#try!(stream.read_u16::<LE>()),
                 value: Vec::new(),
             };
             stream.take((len - 2) as u64).read_to_end(&mut attr.value).ok().expect("Error reading attribute value");

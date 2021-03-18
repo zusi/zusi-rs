@@ -1,12 +1,12 @@
-use node::{Node, Attribute};
-use tcp::{TcpSendable, receive};
+use crate::node::{Node, Attribute};
+use crate::tcp::{TcpSendable, receive};
 use std::io;
 use std::io::{ErrorKind, Error};
 use std::io::Read;
 use std::io::Write;
 
 pub fn send_hello<T: Read + Write>(client_name: &str, client_version: &str, stream: &mut T) -> io::Result<()> {
-    try!(Node {
+    r#try!(Node {
         id: 0x0001, // establishing connection
         attributes: vec![],
         children: vec![
@@ -22,7 +22,7 @@ pub fn send_hello<T: Read + Write>(client_name: &str, client_version: &str, stre
             },
         ],
     }.send(stream));
-    try!(stream.flush());
+    r#try!(stream.flush());
 
     let result = match receive(stream) {
         Ok(node) => node,
@@ -79,7 +79,7 @@ pub fn send_needed_data<T: Read + Write>(cab_display_ids: &[u16], program_data_i
         });
     }
 
-    try!(Node {
+    r#try!(Node {
         id: 0x0002, // client application 02
         attributes: vec![],
         children: vec![
@@ -90,7 +90,7 @@ pub fn send_needed_data<T: Read + Write>(cab_display_ids: &[u16], program_data_i
             },
         ],
     }.send(stream));
-    try!(stream.flush());
+    r#try!(stream.flush());
 
     let result = match receive(stream) {
         Ok(node) => node,
