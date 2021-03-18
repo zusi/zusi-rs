@@ -10,7 +10,7 @@ pub fn send_hello<T: Read + Write>(
     client_version: &str,
     stream: &mut T,
 ) -> io::Result<()> {
-    r#try!(Node {
+    Node {
         id: 0x0001, // establishing connection
         attributes: vec![],
         children: vec![Node {
@@ -24,8 +24,8 @@ pub fn send_hello<T: Read + Write>(
             children: vec![],
         },],
     }
-    .send(stream));
-    r#try!(stream.flush());
+    .send(stream)?;
+    stream.flush()?;
 
     let result = match receive(stream) {
         Ok(node) => node,
@@ -108,7 +108,7 @@ pub fn send_needed_data<T: Read + Write>(
         });
     }
 
-    r#try!(Node {
+    Node {
         id: 0x0002, // client application 02
         attributes: vec![],
         children: vec![Node {
@@ -117,8 +117,8 @@ pub fn send_needed_data<T: Read + Write>(
             children: needed_data,
         },],
     }
-    .send(stream));
-    r#try!(stream.flush());
+    .send(stream)?;
+    stream.flush()?;
 
     let result = match receive(stream) {
         Ok(node) => node,
