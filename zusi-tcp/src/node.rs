@@ -1,7 +1,7 @@
 use byteorder;
 
 use self::byteorder::{ReadBytesExt, WriteBytesExt};
-use std::io::Cursor;
+use std::io::{self, Cursor};
 use std::string::FromUtf8Error;
 
 type LE = self::byteorder::LittleEndian;
@@ -210,19 +210,19 @@ impl Attribute {
         }
     }
 
-    pub fn as_u8(&self) -> byteorder::Result<u8> {
+    pub fn as_u8(&self) -> io::Result<u8> {
         Cursor::new(&self.value[..]).read_u8()
     }
 
-    pub fn as_u16(&self) -> byteorder::Result<u16> {
+    pub fn as_u16(&self) -> io::Result<u16> {
         Cursor::new(&self.value[..]).read_u16::<LE>()
     }
 
-    pub fn as_i16(&self) -> byteorder::Result<i16> {
+    pub fn as_i16(&self) -> io::Result<i16> {
         Cursor::new(&self.value[..]).read_i16::<LE>()
     }
 
-    pub fn as_f32(&self) -> byteorder::Result<f32> {
+    pub fn as_f32(&self) -> io::Result<f32> {
         Cursor::new(&self.value[..]).read_f32::<LE>()
     }
 
