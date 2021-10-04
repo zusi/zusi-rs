@@ -9,7 +9,7 @@ use quote::quote;
 use crate::{MyFieldReceiver, MyTraitReceiver};
 
 pub(crate) fn impl_deserialize(
-    mut errors: &mut Vec<Error>,
+    errors: &mut Vec<Error>,
     input: &MyTraitReceiver,
 ) -> TokenStream {
     if !input.generics.params.is_empty() {
@@ -18,7 +18,7 @@ pub(crate) fn impl_deserialize(
     }
 
     match &input.data {
-        Data::Struct(ds) => impl_deserialize_struct(&mut errors, &input.ident, ds),
+        Data::Struct(ds) => impl_deserialize_struct(errors, &input.ident, ds),
         Data::Enum(de) => impl_deserialize_enum(&input.ident, de),
     }
 }

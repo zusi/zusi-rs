@@ -7,14 +7,14 @@ use darling::{ast, Error};
 use proc_macro2::TokenStream;
 use quote::quote;
 
-pub(crate) fn impl_serialize(mut errors: &mut Vec<Error>, input: &MyTraitReceiver) -> TokenStream {
+pub(crate) fn impl_serialize(errors: &mut Vec<Error>, input: &MyTraitReceiver) -> TokenStream {
     if !input.generics.params.is_empty() {
         errors.push(Error::custom("Can not parse Generic struct"));
         return TokenStream::new();
     }
 
     match &input.data {
-        Data::Struct(ds) => impl_serialize_struct(&mut errors, &input.ident, ds),
+        Data::Struct(ds) => impl_serialize_struct(errors, &input.ident, ds),
         Data::Enum(de) => impl_serialize_enum(&input.ident, de),
     }
 }

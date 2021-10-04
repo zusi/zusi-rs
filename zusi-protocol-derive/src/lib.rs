@@ -30,7 +30,7 @@ struct MyFieldReceiver {
     ident: Option<syn::Ident>,
 
     /// This magic field name pulls the type from the input.
-    ty: syn::Type,
+    // ty: syn::Type,
 
     /// We declare this as an `Option` so that during tokenization we can write
     /// `field.volume.unwrap_or(derive_input.volume)` to facilitate field-level

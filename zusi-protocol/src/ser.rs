@@ -92,7 +92,7 @@ impl Serialize for &str {
 
         writer.write_all(&len.to_le_bytes())?;
         writer.write_all(&id.to_le_bytes())?;
-        writer.write_all(&self.as_bytes())?;
+        writer.write_all(self.as_bytes())?;
 
         Ok(())
     }
