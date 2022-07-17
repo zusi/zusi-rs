@@ -96,10 +96,7 @@ pub fn connect<A: ToSocketAddrs>(addr: A) -> Result<(TcpStream, AckHello)> {
         name: "Fahrpult".to_string(),
         version: "2.0".to_string(),
     };
-    let handshake = Verbindungsaufbau {
-        hello: Some(handshake),
-        ..Default::default()
-    };
+    let handshake = Verbindungsaufbau { hello: Some(handshake), ..Default::default() };
     handshake.serialize(&mut stream, 0)?;
 
     // Receive ACK
@@ -111,9 +108,7 @@ pub fn connect<A: ToSocketAddrs>(addr: A) -> Result<(TcpStream, AckHello)> {
     };
 
     if ack.error_code != 0 {
-        return Err(ZusiClientError::Connect {
-            error_code: ack.error_code,
-        });
+        return Err(ZusiClientError::Connect { error_code: ack.error_code });
     }
 
     Ok((stream, ack))

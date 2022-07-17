@@ -17,15 +17,10 @@ fn main() -> Result<(), ZusiClientError> {
 
     {
         let needed_data = NeededData {
-            fuehrerstands_anzeigen: Some(FuehrerstandsAnzeigen {
-                anzeigen: vec![0x0001],
-            }),
+            fuehrerstands_anzeigen: Some(FuehrerstandsAnzeigen { anzeigen: vec![0x0001] }),
             ..Default::default()
         };
-        let needed_data = Fahrpult {
-            needed_data: Some(needed_data),
-            ..Default::default()
-        };
+        let needed_data = Fahrpult { needed_data: Some(needed_data), ..Default::default() };
 
         zusi_fahrpult::send_fahrpult(needed_data, &mut stream)?;
     }

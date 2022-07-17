@@ -34,4 +34,4 @@ pub enum ProtocolError {
     Deserialization(String),
 }
 
-pub trait RootMessage : Serialize + Deserialize {}
+pub trait RootMessage: Serialize + Deserialize {}
