@@ -5,7 +5,7 @@ use std::net::ToSocketAddrs;
 use thiserror::Error;
 
 use zusi_protocol::de::Header;
-use zusi_protocol::{Deserialize, ProtocolError, Serialize};
+use zusi_protocol::{Deserialize, ProtocolError, RootMessage, Serialize};
 
 use crate::fahrpult::Fahrpult;
 use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
@@ -21,7 +21,7 @@ mod integration_test;
 pub type Result<T> = std::result::Result<T, ZusiClientError>;
 
 #[derive(Default, Debug, PartialEq)]
-struct Message {
+pub struct Message {
     // #[zusi(id = 0x0001)]
     verbindungsaufbau: Option<verbindungsaufbau::Verbindungsaufbau>,
     // #[zusi(id = 0x0002)]
@@ -62,6 +62,8 @@ impl Deserialize for Message {
         Ok(node)
     }
 }
+
+impl RootMessage for Message {}
 
 pub fn send_verbindungsaufbau<W>(
     msg: verbindungsaufbau::Verbindungsaufbau,
