@@ -8,10 +8,7 @@ use quote::quote;
 
 use crate::{MyFieldReceiver, MyTraitReceiver};
 
-pub(crate) fn impl_deserialize(
-    errors: &mut Vec<Error>,
-    input: &MyTraitReceiver,
-) -> TokenStream {
+pub(crate) fn impl_deserialize(errors: &mut Vec<Error>, input: &MyTraitReceiver) -> TokenStream {
     if !input.generics.params.is_empty() {
         errors.push(Error::custom("Can not parse Generic struct"));
         return TokenStream::new();

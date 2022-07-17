@@ -293,7 +293,8 @@ fn test_beispiel_3_deserialize() {
 
 #[test]
 fn test_beispiel_3_with_unknown_attribute_deserialize() {
-    let result: Message = receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_ATTRIBUTE[..]).unwrap();
+    let result: Message =
+        receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_ATTRIBUTE[..]).unwrap();
 
     assert_eq!(beispiel_3_msg(), result);
 }
@@ -307,7 +308,8 @@ fn test_beispiel_3_with_unknown_node_deserialize() {
 
 #[test]
 fn test_beispiel_3_with_unknown_node_nested_deserialize() {
-    let result: Message = receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED[..]).unwrap();
+    let result: Message =
+        receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED[..]).unwrap();
 
     assert_eq!(beispiel_3_msg(), result);
 }
