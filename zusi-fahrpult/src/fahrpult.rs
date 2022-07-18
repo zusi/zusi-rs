@@ -1,4 +1,3 @@
-use zusi_protocol::{Deserialize, Serialize};
 use zusi_protocol_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]

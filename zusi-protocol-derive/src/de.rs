@@ -43,25 +43,25 @@ fn impl_deserialize_struct(
             let field_name = field.ident.as_ref().unwrap();
 
             quote! {
-                #field_id => { Deserialize::deserialize_in_place(reader, len, &mut node.#field_name)?; },
+                #field_id => { ::zusi_protocol::Deserialize::deserialize_in_place(reader, len, &mut node.#field_name)?; },
             }
         })
         .collect();
 
     let token_stream2 = quote! {
-        impl Deserialize for #name {
-            fn deserialize<R: std::io::Read>(reader: &mut R, len: u32) -> std::result::Result<Self, zusi_protocol::ProtocolError> {
+        impl ::zusi_protocol::Deserialize for #name {
+            fn deserialize<R: ::std::io::Read>(reader: &mut R, len: u32) -> ::std::result::Result<Self, ::zusi_protocol::ProtocolError> {
                 let mut node: Self = Default::default();
 
                 loop {
                     let header = zusi_protocol::de::read_header(reader)?;
 
                     match header {
-                        zusi_protocol::de::Header::StructEnd => return Ok(node),
-                        zusi_protocol::de::Header::Field { id, len } => match id {
+                        ::zusi_protocol::de::Header::StructEnd => return Ok(node),
+                        ::zusi_protocol::de::Header::Field { id, len } => match id {
                             #(#fields)*
                             // 0x0001 => {node.id.deserialize_field()}
-                            _ => { zusi_protocol::de::read_unknown_field(reader, zusi_protocol::de::Header::Field { id, len })?; }
+                            _ => { ::zusi_protocol::de::read_unknown_field(reader, ::zusi_protocol::de::Header::Field { id, len })?; }
                         },
                     }
                 }
