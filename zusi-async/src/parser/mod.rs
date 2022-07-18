@@ -1,9 +1,14 @@
+use std::io::Write;
+
 use nom::{
     branch::alt,
     bytes::streaming::{tag, take},
     number::streaming::{le_u16, le_u32},
     IResult,
 };
+
+const NODE_BEGIN: &[u8; 4] = &[0x00; 4];
+const NODE_END: &[u8; 4] = &[0xFF; 4];
 
 #[derive(Debug, Default)]
 pub struct Node {
@@ -16,12 +21,42 @@ impl Node {
     fn with_id(id: u16) -> Self {
         Self { id, ..Default::default() }
     }
+
+    pub fn write<W>(&self, writer: &mut W) -> Result<(), std::io::Error>
+    where W: Write,
+    {
+        writer.write_all(NODE_BEGIN)?;
+        writer.write_all(&self.id.to_le_bytes())?;
+
+        for c in &self.children {
+            c.write(writer)?;
+        }
+
+        for a in &self.attributes {
+            a.write(writer)?;
+        }
+
+        writer.write_all(NODE_END)?;
+        todo!()
+    }
 }
 
 #[derive(Debug)]
 pub struct Attribute {
     pub id: u16,
     pub value: Vec<u8>,
+}
+
+impl Attribute {
+    pub fn write<W>(&self, writer: &mut W) -> Result<(), std::io::Error>
+    where W: Write,
+    {
+        writer.write_all(&(self.value.len() as u32).to_le_bytes())?;
+        writer.write_all(&self.id.to_le_bytes())?;
+        writer.write_all(&self.value)?;
+
+        Ok(())
+    }
 }
 
 pub fn read(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
@@ -31,7 +66,7 @@ pub fn read(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
 }
 
 pub fn node(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
-    let (input, _) = tag(&[0x00, 0x00, 0x00, 0x00])(input)?;
+    let (input, _) = tag(NODE_BEGIN)(input)?;
     let (input, id) = le_u16(input)?;
 
     let mut node = Node::with_id(id);
@@ -61,7 +96,7 @@ pub fn attribute(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
 }
 
 pub fn end(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
-    let (input, _) = tag(&[0xFF, 0xFF, 0xFF, 0xFF])(input)?;
+    let (input, _) = tag(NODE_END)(input)?;
 
     Ok((input, AttributeOrNode::End))
 }

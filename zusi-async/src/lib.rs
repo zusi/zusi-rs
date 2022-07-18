@@ -5,6 +5,7 @@ use tokio_util::codec::{Decoder, Encoder};
 use zusi_protocol::{ProtocolError, RootMessage};
 
 mod parser;
+pub use parser::{Node, Attribute};
 
 #[derive(Default)]
 pub struct ZusiProtocolCodec<T>
