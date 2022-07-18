@@ -27,8 +27,8 @@ static BEISPIEL_1_BYTES: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
-fn beispiel_1_msg() -> Result<Option<Message<Fahrpult, 2>>, ProtocolError> {
-    Ok(Some(Message {
+fn beispiel_1_msg() -> Message<Fahrpult, 2> {
+    Message {
         verbindungsaufbau: Some(Verbindungsaufbau {
             hello: Some(Hello {
                 protokoll_version: 2,
@@ -39,7 +39,7 @@ fn beispiel_1_msg() -> Result<Option<Message<Fahrpult, 2>>, ProtocolError> {
             ack_hello: None,
         }),
         message: None,
-    }))
+    }
 }
 
 fn consume<T: RootMessage>(
@@ -65,8 +65,9 @@ fn test_decoder() {
 
     let result = consume(&mut codec, &mut bytes);
 
-    assert_eq!(bytes.len(), 0usize);
-    assert_eq!(result[0].as_ref().unwrap().as_ref().unwrap(), &beispiel_1_msg().unwrap().unwrap());
+    assert_eq!(bytes.len(), 0);
+    assert_eq!(result.len(), 1);
+    assert_eq!(result[0].as_ref().unwrap().as_ref().unwrap(), &beispiel_1_msg());
 }
 
 #[test]
