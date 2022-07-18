@@ -36,8 +36,10 @@ pub fn node(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
 
     let mut node = Node::with_id(id);
 
+    let mut input = input;
     loop {
-        let (input, elem) = read(input)?;
+        let (inp, elem) = read(input)?;
+        input = inp;
         match elem {
             AttributeOrNode::End => return Ok((input, node.into())),
             AttributeOrNode::Attribute(a) => {
@@ -59,7 +61,7 @@ pub fn attribute(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
 }
 
 pub fn end(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
-    let (input, _) = tag(&[0x00, 0x00, 0x00, 0x00])(input)?;
+    let (input, _) = tag(&[0xFF, 0xFF, 0xFF, 0xFF])(input)?;
 
     Ok((input, AttributeOrNode::End))
 }
