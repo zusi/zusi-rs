@@ -57,10 +57,10 @@ impl<T: RootMessage> Encoder<T> for ZusiProtocolCodec<T> {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use bytes::BytesMut;
     use tokio_util::codec::Decoder;
     use zusi_fahrpult::Message;
-    use super::*;
     use zusi_protocol::{ProtocolError, RootMessage};
 
     #[test]
@@ -99,7 +99,6 @@ mod tests {
 
         assert_ne!(result, None);
     }
-
 
     fn consume<T: RootMessage>(
         codec: &mut ZusiProtocolCodec<T>,
