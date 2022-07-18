@@ -1,26 +1,26 @@
 use std::{io::Cursor, marker::PhantomData};
 
-use bytes::{Buf, BytesMut};
-use tokio_util::codec::Decoder;
+use bytes::{Buf, BufMut, BytesMut};
+use tokio_util::codec::{Decoder, Encoder};
 use zusi_protocol::{ProtocolError, RootMessage};
 
 mod parser;
 
 #[derive(Default)]
-pub struct ZusiProtocolDecoder<T>
+pub struct ZusiProtocolCodec<T>
 where
     T: RootMessage,
 {
     phantom: PhantomData<*const T>,
 }
 
-impl<T: RootMessage> ZusiProtocolDecoder<T> {
+impl<T: RootMessage> ZusiProtocolCodec<T> {
     pub fn new() -> Self {
         Self::default()
     }
 }
 
-impl<T: RootMessage> Decoder for ZusiProtocolDecoder<T> {
+impl<T: RootMessage> Decoder for ZusiProtocolCodec<T> {
     type Item = T;
 
     type Error = ProtocolError;
@@ -43,13 +43,25 @@ impl<T: RootMessage> Decoder for ZusiProtocolDecoder<T> {
     }
 }
 
+impl<T: RootMessage> Encoder<T> for ZusiProtocolCodec<T> {
+    type Error = ProtocolError;
+
+    fn encode(&mut self, item: T, dst: &mut BytesMut) -> Result<(), Self::Error> {
+        let mut data = Vec::new();
+        item.serialize(&mut data, 0)?;
+        dst.put(&*data);
+
+        todo!()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use bytes::BytesMut;
     use tokio_util::codec::Decoder;
     use zusi_fahrpult::Message;
 
-    use crate::ZusiProtocolDecoder;
+    use crate::ZusiProtocolCodec;
 
     #[test]
     fn it_works() {
@@ -81,7 +93,7 @@ mod tests {
 
     #[test]
     fn run_example() {
-        let mut decoder = ZusiProtocolDecoder::<Message>::new();
+        let mut decoder = ZusiProtocolCodec::<Message>::new();
         let mut bts = BytesMut::from(BEISPIEL_1_BYTES);
         let result = decoder.decode(&mut bts).unwrap();
 
