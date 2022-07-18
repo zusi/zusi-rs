@@ -47,6 +47,8 @@ impl<T: RootMessage> Encoder<T> for ZusiProtocolCodec<T> {
     type Error = ProtocolError;
 
     fn encode(&mut self, item: T, dst: &mut BytesMut) -> Result<(), Self::Error> {
+        // can be optimized after following PR is merged
+        // https://github.com/tokio-rs/bytes/pull/478
         let mut data = Vec::new();
         item.serialize(&mut data, 0)?;
         dst.put(&*data);
