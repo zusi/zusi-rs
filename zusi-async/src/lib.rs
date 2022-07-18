@@ -17,18 +17,6 @@ impl<T: RootMessage> ZusiProtocolDecoder<T> {
     pub fn new() -> Self {
         Self { phantom: PhantomData }
     }
-
-    pub fn read_node(&self, src: &mut BytesMut) -> Option<usize> {
-        todo!();
-
-        None
-    }
-
-    pub fn read_attr(&self, src: &mut BytesMut) -> Option<usize> {
-        todo!();
-
-        None
-    }
 }
 
 impl<T: RootMessage> Decoder for ZusiProtocolDecoder<T> {
@@ -37,23 +25,20 @@ impl<T: RootMessage> Decoder for ZusiProtocolDecoder<T> {
     type Error = ProtocolError;
 
     fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
-        let len = match self.read_node(src) {
-            Some(l) => l,
-            None => return Ok(None),
-        };
-
-        let data = src[0..len].to_vec();
-        let mut data = Cursor::new(data);
-        src.advance(len);
-
         match parser::read(src) {
-            Ok(_) => todo!(),
-            Err(_) => todo!(),
+            Ok((input, _node)) => {
+                let len = src.len() - input.len();
+                let data = src[..len].to_vec();
+                let mut data = Cursor::new(data);
+                let msg = T::deserialize(&mut data, 0)?;
+
+                src.advance(len);
+
+                Ok(Some(msg))
+            }
+            Err(nom::Err::Incomplete(_)) => Ok(None),
+            Err(_e) => Err(ProtocolError::Deserialization("".into())),
         }
-
-        let msg = T::deserialize(&mut data, 0)?;
-
-        Ok(Some(msg))
     }
 }
 
