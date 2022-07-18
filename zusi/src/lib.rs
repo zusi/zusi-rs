@@ -5,7 +5,7 @@ use zusi_protocol::{de::Header, Deserialize, RootMessage, Serialize};
 pub mod verbindungsaufbau;
 
 pub mod fahrpult {
-    pub use zusi_fahrpult::fahrpult::*;
+    pub use zusi_fahrpult::*;
 }
 
 pub mod protocol {

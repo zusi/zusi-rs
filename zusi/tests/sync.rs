@@ -1,11 +1,11 @@
 use std::io::{Cursor, Read, Write};
 
+use thiserror::Error;
 use zusi::verbindungsaufbau::*;
 use zusi::{
     fahrpult::{self, *},
     Message,
 };
-use zusi_fahrpult::ZusiClientError;
 use zusi_protocol::{Deserialize, Serialize};
 
 // use crate::fahrpult::{AckNeededData, DataFtd, Fahrpult, FuehrerstandsAnzeigen, NeededData};
@@ -459,4 +459,23 @@ fn test_send_all() {
     expected.extend_from_slice(BEISPIEL_5_BYTES);
 
     assert_eq!(result.into_inner(), expected);
+}
+
+#[non_exhaustive]
+#[derive(Error, Debug)]
+pub enum ZusiClientError {
+    #[error("IO")]
+    Io {
+        #[from]
+        source: std::io::Error,
+    },
+    #[error("TCP Client")]
+    Protocol {
+        #[from]
+        soruce: zusi_protocol::ProtocolError,
+    },
+    #[error("error code returned from server {error_code}")]
+    Connect { error_code: u8 },
+    #[error("other message type as tried to receive was received")]
+    WrongMessageType,
 }
