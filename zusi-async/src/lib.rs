@@ -51,7 +51,7 @@ impl<T: RootMessage> Encoder<T> for ZusiProtocolCodec<T> {
         item.serialize(&mut data, 0)?;
         dst.put(&*data);
 
-        todo!()
+        Ok(())
     }
 }
 
@@ -60,8 +60,8 @@ mod tests {
     use bytes::BytesMut;
     use tokio_util::codec::Decoder;
     use zusi_fahrpult::Message;
-
-    use crate::ZusiProtocolCodec;
+    use super::*;
+    use zusi_protocol::{ProtocolError, RootMessage};
 
     #[test]
     fn it_works() {
@@ -98,5 +98,44 @@ mod tests {
         let result = decoder.decode(&mut bts).unwrap();
 
         assert_ne!(result, None);
+    }
+
+
+    fn consume<T: RootMessage>(
+        codec: &mut ZusiProtocolCodec<T>,
+        bytes: &mut BytesMut,
+    ) -> Vec<Result<Option<T>, ProtocolError>> {
+        let mut result = Vec::new();
+        loop {
+            match codec.decode(bytes) {
+                Ok(None) => {
+                    break;
+                }
+                output => result.push(output),
+            }
+        }
+        return result;
+    }
+
+    #[test]
+    fn test_decoder() {
+        let mut codec = ZusiProtocolCodec::<Message>::new();
+        let mut bytes = BytesMut::from(BEISPIEL_1_BYTES);
+
+        let result = consume(&mut codec, &mut bytes);
+
+        assert_eq!(bytes.len(), 0usize);
+        assert_eq!(result.len(), 1);
+    }
+
+    #[test]
+    fn test_encoder() {
+        let mut codec = ZusiProtocolCodec::<Message>::new();
+        let mut output = BytesMut::new();
+        let message = Message::default();
+
+        codec.encode(message, &mut output).unwrap();
+
+        assert_eq!(output.len(), 0);
     }
 }
