@@ -23,7 +23,8 @@ impl Node {
     }
 
     pub fn write<W>(&self, writer: &mut W) -> Result<(), std::io::Error>
-    where W: Write,
+    where
+        W: Write,
     {
         writer.write_all(NODE_BEGIN)?;
         writer.write_all(&self.id.to_le_bytes())?;
@@ -49,7 +50,8 @@ pub struct Attribute {
 
 impl Attribute {
     pub fn write<W>(&self, writer: &mut W) -> Result<(), std::io::Error>
-    where W: Write,
+    where
+        W: Write,
     {
         writer.write_all(&(self.value.len() as u32).to_le_bytes())?;
         writer.write_all(&self.id.to_le_bytes())?;
