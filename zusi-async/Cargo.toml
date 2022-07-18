@@ -1,0 +1,17 @@
+[package]
+name = "zusi-async"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bytes = "1"
+nom = "7"
+tokio-util = { version = "0.7", features = ["codec"] }
+zusi-protocol = { path = "../zusi-protocol" }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net"] }
+zusi-fahrpult = { path = "../zusi-fahrpult" }
+futures = "0.3"

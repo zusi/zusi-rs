@@ -5,7 +5,7 @@ use std::net::ToSocketAddrs;
 use thiserror::Error;
 
 use zusi_protocol::de::Header;
-use zusi_protocol::{Deserialize, ProtocolError, Serialize};
+use zusi_protocol::{Deserialize, ProtocolError, RootMessage, Serialize};
 
 use crate::fahrpult::Fahrpult;
 use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
@@ -21,7 +21,7 @@ mod integration_test;
 pub type Result<T> = std::result::Result<T, ZusiClientError>;
 
 #[derive(Default, Debug, PartialEq)]
-struct Message {
+pub struct Message {
     // #[zusi(id = 0x0001)]
     verbindungsaufbau: Option<verbindungsaufbau::Verbindungsaufbau>,
     // #[zusi(id = 0x0002)]
@@ -63,6 +63,8 @@ impl Deserialize for Message {
     }
 }
 
+impl RootMessage for Message {}
+
 pub fn send_verbindungsaufbau<W>(
     msg: verbindungsaufbau::Verbindungsaufbau,
     mut writer: &mut W,
@@ -94,10 +96,7 @@ pub fn connect<A: ToSocketAddrs>(addr: A) -> Result<(TcpStream, AckHello)> {
         name: "Fahrpult".to_string(),
         version: "2.0".to_string(),
     };
-    let handshake = Verbindungsaufbau {
-        hello: Some(handshake),
-        ..Default::default()
-    };
+    let handshake = Verbindungsaufbau { hello: Some(handshake), ..Default::default() };
     handshake.serialize(&mut stream, 0)?;
 
     // Receive ACK
@@ -109,9 +108,7 @@ pub fn connect<A: ToSocketAddrs>(addr: A) -> Result<(TcpStream, AckHello)> {
     };
 
     if ack.error_code != 0 {
-        return Err(ZusiClientError::Connect {
-            error_code: ack.error_code,
-        });
+        return Err(ZusiClientError::Connect { error_code: ack.error_code });
     }
 
     Ok((stream, ack))
