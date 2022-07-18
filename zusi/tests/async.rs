@@ -74,9 +74,19 @@ fn test_decoder() {
 fn test_encoder() {
     let mut codec = ZusiProtocolCodec::<FahrpultMessage>::new();
     let mut output = BytesMut::new();
-    let message = FahrpultMessage::default();
+    let message = beispiel_1_msg();
 
     codec.encode(message, &mut output).unwrap();
 
-    assert_eq!(output.len(), 0);
+    if output != BEISPIEL_1_BYTES {
+        panic!(
+            r#"
+Expected:
+{:02X?}
+Result:
+{:02X?}
+"#,
+            BEISPIEL_1_BYTES, output
+        )
+    }
 }
