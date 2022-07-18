@@ -15,9 +15,6 @@ pub mod fahrpult;
 /// Nachrichten welche zum Verbindungsaufbau zwischen Client und Zusi benutzt werden.
 pub mod verbindungsaufbau;
 
-#[cfg(test)]
-mod integration_test;
-
 pub type Result<T> = std::result::Result<T, ZusiClientError>;
 
 #[derive(Default, Debug, PartialEq)]
@@ -63,7 +60,11 @@ impl Deserialize for Message {
     }
 }
 
-impl RootMessage for Message {}
+impl RootMessage for Message {
+    fn id(&self) -> u16 {
+        2
+    }
+}
 
 pub fn send_verbindungsaufbau<W>(
     msg: verbindungsaufbau::Verbindungsaufbau,

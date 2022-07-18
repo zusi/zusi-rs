@@ -6,8 +6,12 @@ use thiserror::Error;
 pub use crate::de::Deserialize;
 pub use crate::ser::Serialize;
 
+mod codec;
 pub mod de;
+pub mod parser;
 pub mod ser;
+
+pub use codec::ZusiProtocolCodec;
 
 pub type Result<T> = core::result::Result<T, ProtocolError>;
 
@@ -34,4 +38,6 @@ pub enum ProtocolError {
     Deserialization(String),
 }
 
-pub trait RootMessage: Serialize + Deserialize {}
+pub trait RootMessage: Serialize + Deserialize {
+    fn id(&self) -> u16;
+}

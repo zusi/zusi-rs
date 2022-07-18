@@ -1,0 +1,15 @@
+[package]
+name = "zusi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+zusi-protocol = { path = "../zusi-protocol" }
+zusi-fahrpult = { path = "../zusi-fahrpult" }
+zusi-protocol-derive = { path = "../zusi-protocol-derive" }
+
+[dev-dependencies]
+futures = "0.3"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net"] }
+tokio-util = { version = "0.7", features = ["codec"] }
+bytes = "1"

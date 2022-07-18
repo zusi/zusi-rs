@@ -2,8 +2,8 @@ use futures::StreamExt;
 use std::error::Error;
 use tokio::net::TcpStream;
 use tokio_util::codec::Decoder;
-use zusi_async::ZusiProtocolCodec;
 use zusi_fahrpult::Message;
+use zusi_protocol::ZusiProtocolCodec;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {

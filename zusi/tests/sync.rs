@@ -1,8 +1,61 @@
-use std::io::{Cursor, Read};
+use std::io::{Cursor, Read, Write};
 
-use crate::fahrpult::{AckNeededData, DataFtd, Fahrpult, FuehrerstandsAnzeigen, NeededData};
-use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
-use crate::{receive_message, send_fahrpult, send_verbindungsaufbau, Message};
+use zusi::verbindungsaufbau::*;
+use zusi::{
+    fahrpult::{self, *},
+    Message,
+};
+use zusi_fahrpult::ZusiClientError;
+use zusi_protocol::{Deserialize, Serialize};
+
+// use crate::fahrpult::{AckNeededData, DataFtd, Fahrpult, FuehrerstandsAnzeigen, NeededData};
+// use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
+// use crate::{receive_message, send_fahrpult, send_verbindungsaufbau, Message};
+
+pub type Result<T> = std::result::Result<T, ZusiClientError>;
+pub type FahrpultMessage = Message<Fahrpult, 2>;
+
+fn receive_message<R: Read>(mut reader: &mut R) -> Result<FahrpultMessage> {
+    Ok(Message::deserialize(&mut reader, 0)?)
+}
+
+pub fn receive_fahrpult<R: Read>(mut reader: &mut R) -> Result<Fahrpult> {
+    let msg: Message<Fahrpult, 2> = receive_message(&mut reader)?;
+
+    if let Some(m) = msg.message {
+        return Ok(m);
+    }
+
+    Err(ZusiClientError::WrongMessageType)
+}
+
+pub fn receive_verbindungsaufbau<R: Read>(mut reader: &mut R) -> Result<Verbindungsaufbau> {
+    let msg: Message<Fahrpult, 2> = receive_message(&mut reader)?;
+
+    if let Some(m) = msg.verbindungsaufbau {
+        return Ok(m);
+    }
+
+    Err(ZusiClientError::WrongMessageType)
+}
+
+pub fn send_verbindungsaufbau<W>(msg: Verbindungsaufbau, mut writer: &mut W) -> Result<()>
+where
+    W: Write,
+{
+    msg.serialize(&mut writer, 1)?;
+
+    Ok(())
+}
+
+pub fn send_fahrpult<W>(msg: fahrpult::Fahrpult, mut writer: &mut W) -> Result<()>
+where
+    W: Write,
+{
+    msg.serialize(&mut writer, 2)?;
+
+    Ok(())
+}
 
 static BEISPIEL_1_BYTES: &'static [u8] = &[
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
@@ -26,7 +79,7 @@ static BEISPIEL_1_BYTES: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
-fn beispiel_1_msg() -> Message {
+fn beispiel_1_msg() -> Message<Fahrpult, 2> {
     Message {
         verbindungsaufbau: Some(Verbindungsaufbau {
             hello: Some(Hello {
@@ -37,7 +90,7 @@ fn beispiel_1_msg() -> Message {
             }),
             ack_hello: None,
         }),
-        fahrpult: None,
+        message: None,
     }
 }
 
@@ -63,7 +116,7 @@ static BEISPIEL_2_BYTES: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
-fn beispiel_2_msg() -> Message {
+fn beispiel_2_msg() -> Message<Fahrpult, 2> {
     Message {
         verbindungsaufbau: Some(Verbindungsaufbau {
             hello: None,
@@ -75,7 +128,7 @@ fn beispiel_2_msg() -> Message {
                 protokoll_version: None,
             }),
         }),
-        fahrpult: None,
+        message: None,
     }
 }
 
@@ -178,10 +231,10 @@ static BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
-fn beispiel_3_msg() -> Message {
+fn beispiel_3_msg() -> Message<Fahrpult, 2> {
     Message {
         verbindungsaufbau: None,
-        fahrpult: Some(Fahrpult {
+        message: Some(Fahrpult {
             needed_data: Some(NeededData {
                 fuehrerstands_anzeigen: Some(FuehrerstandsAnzeigen {
                     anzeigen: vec![0x0001, 0x001B],
@@ -199,9 +252,9 @@ static BEISPIEL_4_BYTES: &'static [u8] = &[
     0x01, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 ];
 
-fn beispiel_4_msg() -> Message {
+fn beispiel_4_msg() -> Message<Fahrpult, 2> {
     Message {
-        fahrpult: Some(Fahrpult {
+        message: Some(Fahrpult {
             ack_needed_data: Some(AckNeededData { error_code: 0 }),
             ..Default::default()
         }),
@@ -215,9 +268,9 @@ static BEISPIEL_5_BYTES: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 ];
 
-fn beispiel_5_msg() -> Message {
+fn beispiel_5_msg() -> Message<Fahrpult, 2> {
     Message {
-        fahrpult: Some(Fahrpult {
+        message: Some(Fahrpult {
             data_ftd: Some(DataFtd {
                 geschwindigkeit: Some(11.83),
                 lm_schleudern: Some(0.),
@@ -252,7 +305,7 @@ Result:
 
 #[test]
 fn test_beispiel_1_deserialize() {
-    let result: Message = receive_message(&mut &BEISPIEL_1_BYTES[..]).unwrap();
+    let result: FahrpultMessage = receive_message(&mut &BEISPIEL_1_BYTES[..]).unwrap();
 
     assert_eq!(beispiel_1_msg(), result);
 }
@@ -269,7 +322,7 @@ fn test_beispiel_2_serialize() {
 
 #[test]
 fn test_beispiel_2_deserialize() {
-    let result: Message = receive_message(&mut &BEISPIEL_2_BYTES[..]).unwrap();
+    let result: FahrpultMessage = receive_message(&mut &BEISPIEL_2_BYTES[..]).unwrap();
 
     assert_eq!(beispiel_2_msg(), result);
 }
@@ -279,21 +332,21 @@ fn test_beispiel_3_serialize() {
     let msg = beispiel_3_msg();
 
     let mut result: Vec<u8> = Default::default();
-    send_fahrpult(msg.fahrpult.unwrap(), &mut result).unwrap();
+    send_fahrpult(msg.message.unwrap(), &mut result).unwrap();
 
     assert_eq!(result, BEISPIEL_3_BYTES);
 }
 
 #[test]
 fn test_beispiel_3_deserialize() {
-    let result: Message = receive_message(&mut &BEISPIEL_3_BYTES[..]).unwrap();
+    let result: FahrpultMessage = receive_message(&mut &BEISPIEL_3_BYTES[..]).unwrap();
 
     assert_eq!(beispiel_3_msg(), result);
 }
 
 #[test]
 fn test_beispiel_3_with_unknown_attribute_deserialize() {
-    let result: Message =
+    let result: FahrpultMessage =
         receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_ATTRIBUTE[..]).unwrap();
 
     assert_eq!(beispiel_3_msg(), result);
@@ -301,14 +354,15 @@ fn test_beispiel_3_with_unknown_attribute_deserialize() {
 
 #[test]
 fn test_beispiel_3_with_unknown_node_deserialize() {
-    let result: Message = receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE[..]).unwrap();
+    let result: FahrpultMessage =
+        receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE[..]).unwrap();
 
     assert_eq!(beispiel_3_msg(), result);
 }
 
 #[test]
 fn test_beispiel_3_with_unknown_node_nested_deserialize() {
-    let result: Message =
+    let result: FahrpultMessage =
         receive_message(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED[..]).unwrap();
 
     assert_eq!(beispiel_3_msg(), result);
@@ -319,14 +373,14 @@ fn test_beispiel_4_serialize() {
     let msg = beispiel_4_msg();
 
     let mut result: Vec<u8> = Default::default();
-    send_fahrpult(msg.fahrpult.unwrap(), &mut result).unwrap();
+    send_fahrpult(msg.message.unwrap(), &mut result).unwrap();
 
     assert_eq!(result, BEISPIEL_4_BYTES);
 }
 
 #[test]
 fn test_beispiel_4_deserialize() {
-    let result: Message = receive_message(&mut &BEISPIEL_4_BYTES[..]).unwrap();
+    let result: FahrpultMessage = receive_message(&mut &BEISPIEL_4_BYTES[..]).unwrap();
 
     assert_eq!(beispiel_4_msg(), result);
 }
@@ -336,14 +390,14 @@ fn test_beispiel_5_serialize() {
     let msg = beispiel_5_msg();
 
     let mut result: Vec<u8> = Default::default();
-    send_fahrpult(msg.fahrpult.unwrap(), &mut result).unwrap();
+    send_fahrpult(msg.message.unwrap(), &mut result).unwrap();
 
     assert_eq!(result, BEISPIEL_5_BYTES);
 }
 
 #[test]
 fn test_beispiel_5_deserialize() {
-    let result: Message = receive_message(&mut &BEISPIEL_5_BYTES[..]).unwrap();
+    let result: FahrpultMessage = receive_message(&mut &BEISPIEL_5_BYTES[..]).unwrap();
 
     assert_eq!(beispiel_5_msg(), result);
 }
@@ -358,19 +412,19 @@ fn test_receive_all() {
     msg.extend_from_slice(BEISPIEL_5_BYTES);
     let mut msg = Cursor::new(msg);
 
-    let result: Message = receive_message(&mut msg).unwrap();
+    let result: FahrpultMessage = receive_message(&mut msg).unwrap();
     assert_eq!(beispiel_1_msg(), result);
 
-    let result: Message = receive_message(&mut msg).unwrap();
+    let result: FahrpultMessage = receive_message(&mut msg).unwrap();
     assert_eq!(beispiel_2_msg(), result);
 
-    let result: Message = receive_message(&mut msg).unwrap();
+    let result: FahrpultMessage = receive_message(&mut msg).unwrap();
     assert_eq!(beispiel_3_msg(), result);
 
-    let result: Message = receive_message(&mut msg).unwrap();
+    let result: FahrpultMessage = receive_message(&mut msg).unwrap();
     assert_eq!(beispiel_4_msg(), result);
 
-    let result: Message = receive_message(&mut msg).unwrap();
+    let result: FahrpultMessage = receive_message(&mut msg).unwrap();
     assert_eq!(beispiel_5_msg(), result);
 
     let mut buf = vec![0u8, 8];
@@ -389,13 +443,13 @@ fn test_send_all() {
     send_verbindungsaufbau(msg.verbindungsaufbau.unwrap(), &mut result).unwrap();
 
     let msg = beispiel_3_msg();
-    send_fahrpult(msg.fahrpult.unwrap(), &mut result).unwrap();
+    send_fahrpult(msg.message.unwrap(), &mut result).unwrap();
 
     let msg = beispiel_4_msg();
-    send_fahrpult(msg.fahrpult.unwrap(), &mut result).unwrap();
+    send_fahrpult(msg.message.unwrap(), &mut result).unwrap();
 
     let msg = beispiel_5_msg();
-    send_fahrpult(msg.fahrpult.unwrap(), &mut result).unwrap();
+    send_fahrpult(msg.message.unwrap(), &mut result).unwrap();
 
     let mut expected: Vec<u8> = Default::default();
     expected.extend_from_slice(BEISPIEL_1_BYTES);

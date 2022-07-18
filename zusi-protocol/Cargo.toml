@@ -11,3 +11,11 @@ readme = "../README.md"
 [dependencies]
 thiserror = "1.0"
 log = "0.4"
+nom = "7"
+
+tokio-util = { version = "0.7", features = ["codec"], optional = true }
+bytes = {version = "1", optional = true }
+
+[features]
+default = [ "async" ]
+async = [ "bytes", "tokio-util" ]
