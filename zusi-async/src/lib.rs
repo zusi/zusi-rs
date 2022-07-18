@@ -4,7 +4,7 @@ use bytes::{Buf, BytesMut};
 use tokio_util::codec::Decoder;
 use zusi_protocol::{ProtocolError, RootMessage};
 
-mod dto;
+mod parser;
 
 pub struct ZusiProtocolDecoder<T>
 where
@@ -45,6 +45,11 @@ impl<T: RootMessage> Decoder for ZusiProtocolDecoder<T> {
         let data = src[0..len].to_vec();
         let mut data = Cursor::new(data);
         src.advance(len);
+
+        match parser::read(src) {
+            Ok(_) => todo!(),
+            Err(_) => todo!(),
+        }
 
         let msg = T::deserialize(&mut data, 0)?;
 
