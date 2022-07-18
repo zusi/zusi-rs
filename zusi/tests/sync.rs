@@ -8,10 +8,6 @@ use zusi::{
 };
 use zusi_protocol::{Deserialize, Serialize};
 
-// use crate::fahrpult::{AckNeededData, DataFtd, Fahrpult, FuehrerstandsAnzeigen, NeededData};
-// use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
-// use crate::{receive_message, send_fahrpult, send_verbindungsaufbau, Message};
-
 pub type Result<T> = std::result::Result<T, ZusiClientError>;
 pub type FahrpultMessage = Message<Fahrpult, 2>;
 
