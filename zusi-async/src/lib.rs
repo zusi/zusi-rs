@@ -6,6 +6,7 @@ use zusi_protocol::{ProtocolError, RootMessage};
 
 mod parser;
 
+#[derive(Default)]
 pub struct ZusiProtocolDecoder<T>
 where
     T: RootMessage,
@@ -15,7 +16,7 @@ where
 
 impl<T: RootMessage> ZusiProtocolDecoder<T> {
     pub fn new() -> Self {
-        Self { phantom: PhantomData }
+        Self::default()
     }
 }
 

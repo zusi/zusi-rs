@@ -27,7 +27,7 @@ pub struct Attribute {
 pub fn read(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
     let (input, attr_or_node) = alt((node, end, attribute))(input)?;
 
-    return Ok((input, attr_or_node));
+    Ok((input, attr_or_node))
 }
 
 pub fn node(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
