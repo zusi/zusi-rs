@@ -5,3 +5,4 @@ members = [
     "zusi-protocol-derive",
     "zusi-fahrpult",
 ]
+resolver = "2"

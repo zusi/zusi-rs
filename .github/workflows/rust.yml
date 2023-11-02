@@ -1,13 +1,10 @@
-name: Rust
+name: CI
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
-env:
-  CARGO_TERM_COLOR: always
 
 jobs:
   build:
@@ -17,62 +14,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
 
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
 
       - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --workspace --all-features
+        run: cargo test --workspace --all-targets --all-features
 
-  lints:
-    name: Lints
+  lint:
+    name: Lint
     runs-on: ubuntu-22.04
+    if: ${{ github.event_name == 'pull_request' && github.ref != 'refs/heads/main' }}
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
 
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
 
-      - uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}-lints
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
 
-      - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
+      - uses: giraffate/clippy-action@v1
         with:
-          command: fmt
-          args: --all -- --check
+          reporter: 'github-pr-review'
 
-      - name: Clippy
-        uses: actions-rs/clippy@master
-        with:
-          args: --all-features
+      - name: Check cargo fmt
+        run: cargo fmt --all -- --check
