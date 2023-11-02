@@ -8,6 +8,7 @@ pub use crate::ser::Serialize;
 
 pub mod de;
 pub mod ser;
+mod serde;
 
 pub type Result<T> = core::result::Result<T, ProtocolError>;
 
