@@ -6,6 +6,52 @@ use common::*;
 use std::io::{Cursor, Read};
 use zusi::Message;
 
+macro_rules! serialize_tests {
+    ($($name:ident: ($bts:expr,$msg:expr),)*) => {
+        mod serialize {
+            use crate::common::*;
+            $(
+                #[test]
+                fn $name() { super::serialize($bts,$msg); }
+            )*
+        }
+    };
+}
+
+macro_rules! deserialize_tests {
+    ($($name:ident: ($bts:expr,$msg:expr),)*) => {
+        mod deserialize {
+            use crate::common::*;
+            $(
+                #[test]
+                fn $name() { super::deserialize($bts,$msg); }
+            )*
+        }
+    };
+}
+
+fn serialize(bts: &[u8], msg: FahrpultMessage) {
+    let mut result: Vec<u8> = Default::default();
+    Message::write(&msg, &mut result).unwrap();
+
+    if result != bts {
+        panic!(
+            r#"
+Expected:
+{:02X?}
+Result:
+{:02X?}
+"#,
+            bts, result
+        )
+    }
+}
+
+fn deserialize(mut bts: &[u8], msg: FahrpultMessage) {
+    let result: FahrpultMessage = Message::receive(&mut bts).unwrap();
+
+    assert_eq!(msg, result);
+}
 #[test]
 fn test_beispiel_1_serialize() {
     let msg = beispiel_1_msg();
@@ -27,103 +73,23 @@ Result:
     // assert_eq!(result, BEISPIEL_1_BYTES);
 }
 
-#[test]
-fn test_beispiel_1_deserialize() {
-    let result: FahrpultMessage = Message::receive(&mut &BEISPIEL_1_BYTES[..]).unwrap();
-
-    assert_eq!(beispiel_1_msg(), result);
+serialize_tests! {
+    beispiel_1: (BEISPIEL_1_BYTES, beispiel_1_msg()),
+    beispiel_2: (BEISPIEL_2_BYTES, beispiel_2_msg()),
+    beispiel_3: (BEISPIEL_3_BYTES, beispiel_3_msg()),
+    beispiel_4: (BEISPIEL_4_BYTES, beispiel_4_msg()),
+    beispiel_5: (BEISPIEL_5_BYTES, beispiel_5_msg()),
 }
 
-#[test]
-fn test_beispiel_2_serialize() {
-    let msg = beispiel_2_msg();
-
-    let mut result: Vec<u8> = Default::default();
-    Message::write(&msg, &mut result).unwrap();
-
-    assert_eq!(result, BEISPIEL_2_BYTES);
-}
-
-#[test]
-fn test_beispiel_2_deserialize() {
-    let result: FahrpultMessage = Message::receive(&mut &BEISPIEL_2_BYTES[..]).unwrap();
-
-    assert_eq!(beispiel_2_msg(), result);
-}
-
-#[test]
-fn test_beispiel_3_serialize() {
-    let msg = beispiel_3_msg();
-
-    let mut result: Vec<u8> = Default::default();
-    Message::write(&msg, &mut result).unwrap();
-
-    assert_eq!(result, BEISPIEL_3_BYTES);
-}
-
-#[test]
-fn test_beispiel_3_deserialize() {
-    let result: FahrpultMessage = Message::receive(&mut &BEISPIEL_3_BYTES[..]).unwrap();
-
-    assert_eq!(beispiel_3_msg(), result);
-}
-
-#[test]
-fn test_beispiel_3_with_unknown_attribute_deserialize() {
-    let result: FahrpultMessage =
-        Message::receive(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_ATTRIBUTE[..]).unwrap();
-
-    assert_eq!(beispiel_3_msg(), result);
-}
-
-#[test]
-fn test_beispiel_3_with_unknown_node_deserialize() {
-    let result: FahrpultMessage =
-        Message::receive(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE[..]).unwrap();
-
-    assert_eq!(beispiel_3_msg(), result);
-}
-
-#[test]
-fn test_beispiel_3_with_unknown_node_nested_deserialize() {
-    let result: FahrpultMessage =
-        Message::receive(&mut &BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED[..]).unwrap();
-
-    assert_eq!(beispiel_3_msg(), result);
-}
-
-#[test]
-fn test_beispiel_4_serialize() {
-    let msg = beispiel_4_msg();
-
-    let mut result: Vec<u8> = Default::default();
-    Message::write(&msg, &mut result).unwrap();
-
-    assert_eq!(result, BEISPIEL_4_BYTES);
-}
-
-#[test]
-fn test_beispiel_4_deserialize() {
-    let result: FahrpultMessage = Message::receive(&mut &BEISPIEL_4_BYTES[..]).unwrap();
-
-    assert_eq!(beispiel_4_msg(), result);
-}
-
-#[test]
-fn test_beispiel_5_serialize() {
-    let msg = beispiel_5_msg();
-
-    let mut result: Vec<u8> = Default::default();
-    Message::write(&msg, &mut result).unwrap();
-
-    assert_eq!(result, BEISPIEL_5_BYTES);
-}
-
-#[test]
-fn test_beispiel_5_deserialize() {
-    let result: FahrpultMessage = Message::receive(&mut &BEISPIEL_5_BYTES[..]).unwrap();
-
-    assert_eq!(beispiel_5_msg(), result);
+deserialize_tests! {
+    beispiel_1: (BEISPIEL_1_BYTES, beispiel_1_msg()),
+    beispiel_2: (BEISPIEL_2_BYTES, beispiel_2_msg()),
+    beispiel_3: (BEISPIEL_3_BYTES, beispiel_3_msg()),
+    beispiel_3_with_unknown_attribute: (BEISPIEL_3_BYTES_WITH_UNKNOWN_ATTRIBUTE, beispiel_3_msg()),
+    beispiel_3_with_unknown_node: (BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE, beispiel_3_msg()),
+    beispiel_3_with_unknown_node_nested: (BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED, beispiel_3_msg()),
+    beispiel_4: (BEISPIEL_4_BYTES, beispiel_4_msg()),
+    beispiel_5: (BEISPIEL_5_BYTES, beispiel_5_msg()),
 }
 
 #[test]

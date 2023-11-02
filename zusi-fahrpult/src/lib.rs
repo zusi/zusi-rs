@@ -1,4 +1,4 @@
-use zusi_protocol::{Deserialize, ClientType, Serialize};
+use zusi_protocol::{ClientType, Deserialize, Serialize};
 use zusi_protocol_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]

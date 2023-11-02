@@ -25,10 +25,7 @@ where
     }
 
     pub fn is_verbindungsaufbau(&self) -> bool {
-        match self.0 {
-            Either::Left(_) => true,
-            _ => false,
-        }
+        matches!(self.0, Either::Left(_))
     }
 }
 
