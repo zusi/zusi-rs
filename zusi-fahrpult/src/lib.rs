@@ -15,9 +15,6 @@ pub mod fahrpult;
 /// Nachrichten welche zum Verbindungsaufbau zwischen Client und Zusi benutzt werden.
 pub mod verbindungsaufbau;
 
-#[cfg(test)]
-mod integration_test;
-
 pub type Result<T> = std::result::Result<T, ZusiClientError>;
 
 #[derive(Default, Debug, PartialEq)]
@@ -26,6 +23,28 @@ pub struct Message {
     verbindungsaufbau: Option<verbindungsaufbau::Verbindungsaufbau>,
     // #[zusi(id = 0x0002)]
     fahrpult: Option<fahrpult::Fahrpult>,
+}
+
+impl Message {
+    pub fn verbindungsaufbau(&self) -> Option<&Verbindungsaufbau> {
+        self.verbindungsaufbau.as_ref()
+    }
+
+    pub fn fahrpult(&self) -> Option<&Fahrpult> {
+        self.fahrpult.as_ref()
+    }
+}
+
+impl From<Verbindungsaufbau> for Message {
+    fn from(value: Verbindungsaufbau) -> Self {
+        Self { verbindungsaufbau: Some(value), ..Default::default() }
+    }
+}
+
+impl From<Fahrpult> for Message {
+    fn from(value: Fahrpult) -> Self {
+        Self { fahrpult: Some(value), ..Default::default() }
+    }
 }
 
 impl Serialize for Message {

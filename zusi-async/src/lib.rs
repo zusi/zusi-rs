@@ -9,18 +9,18 @@ mod parser;
 #[derive(Default)]
 pub struct ZusiProtocolCodec<T>
 where
-    T: RootMessage,
+    T: RootMessage + Default,
 {
     phantom: PhantomData<*const T>,
 }
 
-impl<T: RootMessage> ZusiProtocolCodec<T> {
+impl<T: RootMessage + Default> ZusiProtocolCodec<T> {
     pub fn new() -> Self {
         Self::default()
     }
 }
 
-impl<T: RootMessage> Decoder for ZusiProtocolCodec<T> {
+impl<T: RootMessage + Default> Decoder for ZusiProtocolCodec<T> {
     type Item = T;
 
     type Error = ProtocolError;
@@ -43,7 +43,7 @@ impl<T: RootMessage> Decoder for ZusiProtocolCodec<T> {
     }
 }
 
-impl<T: RootMessage> Encoder<T> for ZusiProtocolCodec<T> {
+impl<T: RootMessage + Default> Encoder<T> for ZusiProtocolCodec<T> {
     type Error = ProtocolError;
 
     fn encode(&mut self, item: T, dst: &mut BytesMut) -> Result<(), Self::Error> {

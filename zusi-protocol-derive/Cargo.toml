@@ -16,4 +16,3 @@ syn = { version = "2.0", features = ["default", "derive"] }
 quote = "1.0"
 darling = "0.20"
 proc-macro2 = "1.0"
-zusi-protocol = { path = "../zusi-protocol" }

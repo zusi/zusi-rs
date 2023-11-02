@@ -1,0 +1,38 @@
+[package]
+name = "zusi"
+description = "Proxy crate which bundles an async and sync TCP client for Zusi 3"
+version = "0.1.0"
+authors = ["Jannis Schaefer <j.schaefer@estwx.de>"]
+license = "MIT OR Apache-2.0"
+edition = "2021"
+repository = "https://github.com/zusi/zusi-rs"
+readme = "../README.md"
+
+[[example]]
+name = "fahrpult_async"
+required-features = ["async", "fahrpult"]
+
+[[example]]
+name = "fahrpult_sync"
+required-features = ["fahrpult"]
+
+[[test]]
+name = "integration"
+required-features = ["fahrpult"]
+
+[dependencies]
+either = "1.9"
+zusi-fahrpult = { path = "../zusi-fahrpult", optional = true }
+zusi-async = { path = "../zusi-async", optional = true }
+zusi-protocol-derive = { path = "../zusi-protocol-derive" }
+zusi-protocol = { path = "../zusi-protocol" }
+tokio-util = { version = "0.7", features = ["codec"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "net"] }
+futures = "0.3"
+
+[features]
+default = ["fahrpult", "async"]
+fahrpult = ["zusi-fahrpult"]
+async = ["zusi-async"]

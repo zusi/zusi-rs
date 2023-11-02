@@ -49,12 +49,12 @@ fn impl_serialize_struct(
 
     let token_stream2 = quote! {
         impl Serialize for #name {
-            fn serialize<W: std::io::Write>(&self, writer: &mut W, id: u16) -> std::result::Result<(), zusi_protocol::ProtocolError> {
-                zusi_protocol::ser::write_node_header(writer, id)?;
+            fn serialize<W: std::io::Write>(&self, writer: &mut W, id: u16) -> std::result::Result<(), ::zusi_protocol::ProtocolError> {
+                ::zusi_protocol::ser::write_node_header(writer, id)?;
 
                 #(#fields)*
 
-                zusi_protocol::ser::write_node_end(writer)?;
+                ::zusi_protocol::ser::write_node_end(writer)?;
                 // let mut #input = 0;
 
                 Ok(())

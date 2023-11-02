@@ -50,18 +50,18 @@ fn impl_deserialize_struct(
 
     let token_stream2 = quote! {
         impl Deserialize for #name {
-            fn deserialize<R: std::io::Read>(reader: &mut R, len: u32) -> std::result::Result<Self, zusi_protocol::ProtocolError> {
+            fn deserialize<R: std::io::Read>(reader: &mut R, len: u32) -> std::result::Result<Self, ::zusi_protocol::ProtocolError> {
                 let mut node: Self = Default::default();
 
                 loop {
-                    let header = zusi_protocol::de::read_header(reader)?;
+                    let header = ::zusi_protocol::de::read_header(reader)?;
 
                     match header {
-                        zusi_protocol::de::Header::StructEnd => return Ok(node),
-                        zusi_protocol::de::Header::Field { id, len } => match id {
+                        ::zusi_protocol::de::Header::StructEnd => return Ok(node),
+                        ::zusi_protocol::de::Header::Field { id, len } => match id {
                             #(#fields)*
                             // 0x0001 => {node.id.deserialize_field()}
-                            _ => { zusi_protocol::de::read_unknown_field(reader, zusi_protocol::de::Header::Field { id, len })?; }
+                            _ => { ::zusi_protocol::de::read_unknown_field(reader, zusi_protocol::de::Header::Field { id, len })?; }
                         },
                     }
                 }
