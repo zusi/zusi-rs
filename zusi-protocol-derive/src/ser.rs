@@ -42,14 +42,14 @@ fn impl_serialize_struct(
             let field_name = field.ident.as_ref().unwrap();
 
             quote! {
-                Serialize::serialize(&self.#field_name, writer, #field_id)?;
+                ::zusi_protocol::Serialize::serialize(&self.#field_name, writer, #field_id)?;
             }
         })
         .collect();
 
     let token_stream2 = quote! {
-        impl Serialize for #name {
-            fn serialize<W: std::io::Write>(&self, writer: &mut W, id: u16) -> std::result::Result<(), ::zusi_protocol::ProtocolError> {
+        impl ::zusi_protocol::Serialize for #name {
+            fn serialize<W: ::std::io::Write>(&self, writer: &mut W, id: u16) -> ::std::result::Result<(), ::zusi_protocol::ProtocolError> {
                 ::zusi_protocol::ser::write_node_header(writer, id)?;
 
                 #(#fields)*
