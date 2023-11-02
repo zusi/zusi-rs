@@ -2,7 +2,7 @@ use futures::StreamExt;
 use std::error::Error;
 use tokio::net::TcpStream;
 use tokio_util::codec::Decoder;
-use zusi::client::codec::ZusiProtocolCodec;
+use zusi::client::ZusiProtocolCodec;
 use zusi::fahrpult::Fahrpult;
 
 #[tokio::main(flavor = "current_thread")]

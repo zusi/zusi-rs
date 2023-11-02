@@ -1,5 +1,8 @@
 #[cfg(feature = "async")]
-pub mod codec;
+mod codec;
+
+#[cfg(feature = "async")]
+pub use codec::ZusiProtocolCodec;
 
 use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
 use crate::Message;

@@ -40,6 +40,6 @@ tokio = { version = "1", features = ["macros", "net", "rt"] }
 futures = "0.3"
 
 [features]
-default = ["fahrpult", "async"]
+default = ["fahrpult"]
 fahrpult = ["zusi-fahrpult"]
 async = ["bytes", "tokio-util", "zusi-protocol/parser", "nom"]
