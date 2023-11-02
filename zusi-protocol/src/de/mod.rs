@@ -1,6 +1,4 @@
 mod num;
-
-use core::mem;
 use std::io::Read;
 
 use log::warn;

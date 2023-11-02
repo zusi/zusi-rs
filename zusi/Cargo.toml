@@ -17,22 +17,30 @@ name = "fahrpult_sync"
 required-features = ["fahrpult"]
 
 [[test]]
-name = "integration"
+name = "serde"
 required-features = ["fahrpult"]
+
+[[test]]
+name = "codec"
+required-features = ["fahrpult", "async"]
 
 [dependencies]
 either = "1.9"
 zusi-fahrpult = { path = "../zusi-fahrpult", optional = true }
-zusi-async = { path = "../zusi-async", optional = true }
 zusi-protocol-derive = { path = "../zusi-protocol-derive" }
 zusi-protocol = { path = "../zusi-protocol" }
-tokio-util = { version = "0.7", features = ["codec"] }
+thiserror = "1"
+
+bytes = { version = "1", optional = true }
+tokio-util = { version = "0.7", features = ["codec"], optional = true }
+nom = { version = "7", optional = true }
 
 [dev-dependencies]
-tokio = { version = "1", features = ["macros", "net"] }
+tokio = { version = "1", features = ["macros", "net", "rt"] }
 futures = "0.3"
+zusi-fahrpult = { path = "../zusi-fahrpult" }
 
 [features]
 default = ["fahrpult", "async"]
 fahrpult = ["zusi-fahrpult"]
-async = ["zusi-async"]
+async = ["bytes", "tokio-util", "zusi-protocol/parser", "nom"]

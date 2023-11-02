@@ -2,26 +2,34 @@ use std::{io::Cursor, marker::PhantomData};
 
 use bytes::{Buf, BufMut, BytesMut};
 use tokio_util::codec::{Decoder, Encoder};
-use zusi_protocol::{ProtocolError, RootMessage};
 
-mod parser;
+use zusi_protocol::parser;
+use zusi_protocol::{ClientType, ProtocolError};
+
+use crate::Message;
 
 #[derive(Default)]
 pub struct ZusiProtocolCodec<T>
 where
-    T: RootMessage + Default,
+    T: ClientType,
 {
     phantom: PhantomData<*const T>,
 }
 
-impl<T: RootMessage + Default> ZusiProtocolCodec<T> {
+impl<T> ZusiProtocolCodec<T>
+where
+    T: ClientType,
+{
     pub fn new() -> Self {
         Self::default()
     }
 }
 
-impl<T: RootMessage + Default> Decoder for ZusiProtocolCodec<T> {
-    type Item = T;
+impl<T> Decoder for ZusiProtocolCodec<T>
+where
+    T: ClientType,
+{
+    type Item = Message<T>;
 
     type Error = ProtocolError;
 
@@ -31,7 +39,7 @@ impl<T: RootMessage + Default> Decoder for ZusiProtocolCodec<T> {
                 let len = src.len() - input.len();
                 let data = src[..len].to_vec();
                 let mut data = Cursor::new(data);
-                let msg = T::deserialize(&mut data, 0)?;
+                let msg = Message::<T>::receive(&mut data)?;
 
                 src.advance(len);
 
@@ -43,14 +51,17 @@ impl<T: RootMessage + Default> Decoder for ZusiProtocolCodec<T> {
     }
 }
 
-impl<T: RootMessage + Default> Encoder<T> for ZusiProtocolCodec<T> {
+impl<T> Encoder<Message<T>> for ZusiProtocolCodec<T>
+where
+    T: ClientType,
+{
     type Error = ProtocolError;
 
-    fn encode(&mut self, item: T, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&mut self, item: Message<T>, dst: &mut BytesMut) -> Result<(), Self::Error> {
         // can be optimized after following PR is merged
         // https://github.com/tokio-rs/bytes/pull/478
         let mut data = Vec::new();
-        item.serialize(&mut data, 0)?;
+        item.write(&mut data)?;
         dst.put(&*data);
 
         Ok(())
@@ -59,19 +70,19 @@ impl<T: RootMessage + Default> Encoder<T> for ZusiProtocolCodec<T> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use bytes::BytesMut;
     use tokio_util::codec::Decoder;
-    use zusi_fahrpult::Message;
-    use zusi_protocol::{ProtocolError, RootMessage};
 
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
+    use zusi_fahrpult::Fahrpult;
+    use zusi_protocol::{ClientType, ProtocolError};
 
-    static BEISPIEL_1_BYTES: &'static [u8] = &[
+    use crate::Message;
+
+    use super::*;
+
+    type FahrpultMessage = Message<Fahrpult>;
+
+    static BEISPIEL_1_BYTES: &[u8] = &[
         0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
         0x01, 0x00, // ID 1: Verbindungsaufbau
         0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
@@ -95,17 +106,17 @@ mod tests {
 
     #[test]
     fn run_example() {
-        let mut decoder = ZusiProtocolCodec::<Message>::new();
+        let mut decoder = ZusiProtocolCodec::<Fahrpult>::new();
         let mut bts = BytesMut::from(BEISPIEL_1_BYTES);
         let result = decoder.decode(&mut bts).unwrap();
 
         assert_ne!(result, None);
     }
 
-    fn consume<T: RootMessage>(
+    fn consume<T: ClientType + Default>(
         codec: &mut ZusiProtocolCodec<T>,
         bytes: &mut BytesMut,
-    ) -> Vec<Result<Option<T>, ProtocolError>> {
+    ) -> Vec<Result<Option<Message<T>>, ProtocolError>> {
         let mut result = Vec::new();
         loop {
             match codec.decode(bytes) {
@@ -120,23 +131,12 @@ mod tests {
 
     #[test]
     fn test_decoder() {
-        let mut codec = ZusiProtocolCodec::<Message>::new();
+        let mut codec = ZusiProtocolCodec::<Fahrpult>::new();
         let mut bytes = BytesMut::from(BEISPIEL_1_BYTES);
 
         let result = consume(&mut codec, &mut bytes);
 
         assert_eq!(bytes.len(), 0usize);
         assert_eq!(result.len(), 1);
-    }
-
-    #[test]
-    fn test_encoder() {
-        let mut codec = ZusiProtocolCodec::<Message>::new();
-        let mut output = BytesMut::new();
-        let message = Message::default();
-
-        codec.encode(message, &mut output).unwrap();
-
-        assert_eq!(output.len(), 0);
     }
 }

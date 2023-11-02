@@ -9,6 +9,9 @@ pub use crate::ser::Serialize;
 pub mod de;
 pub mod ser;
 
+#[cfg(feature = "parser")]
+pub mod parser;
+
 pub type Result<T> = core::result::Result<T, ProtocolError>;
 
 pub const NODE_START: [u8; 4] = [0; 4];
@@ -34,4 +37,6 @@ pub enum ProtocolError {
     Deserialization(String),
 }
 
-pub trait RootMessage: Serialize + Deserialize {}
+pub trait ClientType: Serialize + Deserialize + Default {
+    const ID: u16;
+}

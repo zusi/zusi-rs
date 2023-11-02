@@ -12,3 +12,8 @@ readme = "../README.md"
 thiserror = "1.0"
 log = "0.4"
 zusi-protocol-derive = { path = "../zusi-protocol-derive" }
+nom = { version = "7", optional = true }
+
+[features]
+default = []
+parser = ["nom"]

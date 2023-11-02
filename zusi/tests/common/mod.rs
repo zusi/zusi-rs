@@ -1,10 +1,10 @@
-use zusi_fahrpult::fahrpult::{
-    AckNeededData, DataFtd, Fahrpult, FuehrerstandsAnzeigen, NeededData,
-};
-use zusi_fahrpult::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
-use zusi_fahrpult::Message;
+use zusi::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
+use zusi::Message;
+use zusi_fahrpult::{AckNeededData, DataFtd, Fahrpult, FuehrerstandsAnzeigen, NeededData};
 
-pub static BEISPIEL_1_BYTES: &'static [u8] = &[
+pub type FahrpultMessage = Message<Fahrpult>;
+
+pub static BEISPIEL_1_BYTES: &[u8] = &[
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
     0x01, 0x00, // ID 1: Verbindungsaufbau
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
@@ -26,7 +26,7 @@ pub static BEISPIEL_1_BYTES: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
-pub fn beispiel_1_msg() -> Message {
+pub fn beispiel_1_msg() -> FahrpultMessage {
     Verbindungsaufbau {
         hello: Some(Hello {
             protokoll_version: 2,
@@ -39,7 +39,7 @@ pub fn beispiel_1_msg() -> Message {
     .into()
 }
 
-pub static BEISPIEL_2_BYTES: &'static [u8] = &[
+pub static BEISPIEL_2_BYTES: &[u8] = &[
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
     0x01, 0x00, // ID 1: Verbindungsaufbau
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
@@ -61,7 +61,7 @@ pub static BEISPIEL_2_BYTES: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
-pub fn beispiel_2_msg() -> Message {
+pub fn beispiel_2_msg() -> FahrpultMessage {
     Verbindungsaufbau {
         hello: None,
         ack_hello: Some(AckHello {
@@ -75,7 +75,7 @@ pub fn beispiel_2_msg() -> Message {
     .into()
 }
 
-pub static BEISPIEL_3_BYTES: &'static [u8] = &[
+pub static BEISPIEL_3_BYTES: &[u8] = &[
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
     0x02, 0x00, // ID 0x0002: Client-Anwendung Typ 2 (Fahrpult)
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
@@ -93,7 +93,7 @@ pub static BEISPIEL_3_BYTES: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
-pub static BEISPIEL_3_BYTES_WITH_UNKNOWN_ATTRIBUTE: &'static [u8] = &[
+pub static BEISPIEL_3_BYTES_WITH_UNKNOWN_ATTRIBUTE: &[u8] = &[
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
     0x02, 0x00, // ID 0x0002: Client-Anwendung Typ 2 (Fahrpult)
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
@@ -114,7 +114,7 @@ pub static BEISPIEL_3_BYTES_WITH_UNKNOWN_ATTRIBUTE: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
-pub static BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE: &'static [u8] = &[
+pub static BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE: &[u8] = &[
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
     0x02, 0x00, // ID 0x0002: Client-Anwendung Typ 2 (Fahrpult)
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
@@ -141,7 +141,7 @@ pub static BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
-pub static BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED: &'static [u8] = &[
+pub static BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED: &[u8] = &[
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
     0x02, 0x00, // ID 0x0002: Client-Anwendung Typ 2 (Fahrpult)
     0x00, 0x00, 0x00, 0x00, // Länge 0 Bytes → es beginnt ein Knoten
@@ -174,7 +174,7 @@ pub static BEISPIEL_3_BYTES_WITH_UNKNOWN_NODE_NESTED: &'static [u8] = &[
     0xFF, 0xFF, 0xFF, 0xFF, // Ende Knoten
 ];
 
-pub fn beispiel_3_msg() -> Message {
+pub fn beispiel_3_msg() -> FahrpultMessage {
     Fahrpult {
         needed_data: Some(NeededData {
             fuehrerstands_anzeigen: Some(FuehrerstandsAnzeigen { anzeigen: vec![0x0001, 0x001B] }),
@@ -186,22 +186,22 @@ pub fn beispiel_3_msg() -> Message {
     .into()
 }
 
-pub static BEISPIEL_4_BYTES: &'static [u8] = &[
+pub static BEISPIEL_4_BYTES: &[u8] = &[
     0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x03, 0x00, 0x00, 0x00,
     0x01, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 ];
 
-pub fn beispiel_4_msg() -> Message {
+pub fn beispiel_4_msg() -> FahrpultMessage {
     Fahrpult { ack_needed_data: Some(AckNeededData { error_code: 0 }), ..Default::default() }.into()
 }
 
-pub static BEISPIEL_5_BYTES: &'static [u8] = &[
+pub static BEISPIEL_5_BYTES: &[u8] = &[
     0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x06, 0x00, 0x00, 0x00,
     0x01, 0x00, 0xAE, 0x47, 0x3D, 0x41, 0x06, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 ];
 
-pub fn beispiel_5_msg() -> Message {
+pub fn beispiel_5_msg() -> FahrpultMessage {
     Fahrpult {
         data_ftd: Some(DataFtd {
             geschwindigkeit: Some(11.83),

@@ -1,7 +1,6 @@
 [workspace]
 members = [
     "zusi",
-    "zusi-async",
     "zusi-protocol",
     "zusi-protocol-derive",
     "zusi-fahrpult",
