@@ -1,6 +1,6 @@
+use zusi::fahrpult::{AckNeededData, DataFtd, Fahrpult, FuehrerstandsAnzeigen, NeededData};
 use zusi::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
 use zusi::Message;
-use zusi_fahrpult::{AckNeededData, DataFtd, Fahrpult, FuehrerstandsAnzeigen, NeededData};
 
 pub type FahrpultMessage = Message<Fahrpult>;
 

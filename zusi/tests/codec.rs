@@ -2,8 +2,8 @@ use bytes::BytesMut;
 use tokio_util::codec::{Decoder, Encoder};
 
 use common::*;
-use zusi::client::async_codec::ZusiProtocolCodec;
-use zusi_fahrpult::Fahrpult;
+use zusi::client::codec::ZusiProtocolCodec;
+use zusi::fahrpult::Fahrpult;
 
 mod common;
 

@@ -1,4 +1,5 @@
-pub mod async_codec;
+#[cfg(feature = "async")]
+pub mod codec;
 
 use crate::verbindungsaufbau::{AckHello, Hello, Verbindungsaufbau};
 use crate::Message;

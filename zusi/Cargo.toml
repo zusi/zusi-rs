@@ -38,7 +38,6 @@ nom = { version = "7", optional = true }
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "net", "rt"] }
 futures = "0.3"
-zusi-fahrpult = { path = "../zusi-fahrpult" }
 
 [features]
 default = ["fahrpult", "async"]

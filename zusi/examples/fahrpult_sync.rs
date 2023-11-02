@@ -2,8 +2,8 @@ use std::io::BufReader;
 use std::net::TcpStream;
 use std::thread;
 use zusi::client::{connect, ZusiClientError};
+use zusi::fahrpult::{Fahrpult, FuehrerstandsAnzeigen, NeededData};
 use zusi::Message;
-use zusi_fahrpult::{Fahrpult, FuehrerstandsAnzeigen, NeededData};
 
 fn main() -> Result<(), ZusiClientError> {
     let (mut stream, ack) = connect::<_, Fahrpult>("10.211.55.3:1436")?;
