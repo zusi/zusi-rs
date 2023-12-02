@@ -2,13 +2,13 @@
 name = "zusi-fahrpult"
 description = "TCP-Client for Zusi 3 Hobby `Fahrpult`-Mode."
 version = "0.1.0"
-authors = ["Jannis Schaefer <j.schaefer@estwx.de>"]
+authors = ["Jannis Schaefer <jannis@schaefer.dev>"]
 license = "MIT OR Apache-2.0"
 edition = "2021"
 repository = "https://github.com/zusi/zusi-rs"
 readme = "../README.md"
 
 [dependencies]
-thiserror = "1.0"
+thiserror = "1"
 zusi-protocol-derive = { path = "../zusi-protocol-derive" }
 zusi-protocol = { path = "../zusi-protocol" }
