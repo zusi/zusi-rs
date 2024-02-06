@@ -6,7 +6,7 @@ use zusi::fahrpult::{Fahrpult, FuehrerstandsAnzeigen, NeededData};
 use zusi::Message;
 
 fn main() -> Result<(), ZusiClientError> {
-    let (mut stream, ack) = connect::<_, Fahrpult>("10.211.55.3:1436")?;
+    let (mut stream, ack) = connect::<_, Fahrpult>("127.0.0.1:1435")?;
 
     println!("{}", ack.zusi_version);
 
