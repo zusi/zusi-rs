@@ -1,3 +1,4 @@
+use either::Either;
 use nom::{
     branch::alt,
     bytes::streaming::{tag, take},
@@ -13,7 +14,7 @@ pub struct Node {
 }
 
 impl Node {
-    fn with_id(id: u16) -> Self {
+    pub fn with_id(id: u16) -> Self {
         Self { id, ..Default::default() }
     }
 }
@@ -24,13 +25,13 @@ pub struct Attribute {
     pub value: Vec<u8>,
 }
 
-pub fn read(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
+pub fn read(input: &[u8]) -> IResult<&[u8], Option<AttrOrNode>> {
     let (input, attr_or_node) = alt((node, end, attribute))(input)?;
 
     Ok((input, attr_or_node))
 }
 
-pub fn node(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
+pub fn node(input: &[u8]) -> IResult<&[u8], Option<AttrOrNode>> {
     let (input, _) = tag(&[0x00, 0x00, 0x00, 0x00])(input)?;
     let (input, id) = le_u16(input)?;
 
@@ -40,46 +41,41 @@ pub fn node(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
     loop {
         let (inp, elem) = read(input)?;
         input = inp;
-        match elem {
-            AttributeOrNode::End => return Ok((input, node.into())),
-            AttributeOrNode::Attribute(a) => {
-                node.attributes.push(a);
+        if let Some(elem) = elem {
+            match elem {
+                Either::Left(a) => node.attributes.push(a),
+                Either::Right(n) => node.children.push(n),
             }
-            AttributeOrNode::Node(n) => {
-                node.children.push(n);
-            }
+        } else {
+            return Ok((input, Some(node.into())));
         }
     }
 }
 
-pub fn attribute(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
+pub fn attribute(input: &[u8]) -> IResult<&[u8], Option<AttrOrNode>> {
     let (input, len) = le_u32(input)?;
     let (input, id) = le_u16(input)?;
     let (input, value) = take(len - 2)(input)?;
 
-    Ok((input, Attribute { id, value: value.to_vec() }.into()))
+    Ok((input, Some(Attribute { id, value: value.to_vec() }.into())))
 }
 
-pub fn end(input: &[u8]) -> IResult<&[u8], AttributeOrNode> {
+pub fn end(input: &[u8]) -> IResult<&[u8], Option<AttrOrNode>> {
     let (input, _) = tag(&[0xFF, 0xFF, 0xFF, 0xFF])(input)?;
 
-    Ok((input, AttributeOrNode::End))
+    Ok((input, None))
 }
 
-pub enum AttributeOrNode {
-    Node(Node),
-    Attribute(Attribute),
-    End,
-}
+pub type AttrOrNode = Either<Attribute, Node>;
 
-impl From<Node> for AttributeOrNode {
+impl From<Node> for AttrOrNode {
     fn from(n: Node) -> Self {
-        Self::Node(n)
+        Self::Right(n)
     }
 }
 
-impl From<Attribute> for AttributeOrNode {
+impl From<Attribute> for AttrOrNode {
     fn from(a: Attribute) -> Self {
-        Self::Attribute(a)
+        Self::Left(a)
     }
 }
