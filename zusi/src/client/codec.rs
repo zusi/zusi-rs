@@ -1,5 +1,3 @@
-#![cfg_attr(docsrs, feature(doc_cfg))]
-
 use std::{io::Cursor, marker::PhantomData};
 
 use bytes::{Buf, BufMut, BytesMut};

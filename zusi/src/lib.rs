@@ -1,5 +1,6 @@
 //! Zusi 3 TCP-Client library
 
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(missing_docs)]
 
 pub use message::Message;
