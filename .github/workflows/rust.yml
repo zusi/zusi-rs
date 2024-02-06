@@ -27,6 +27,9 @@ jobs:
     name: Lint
     runs-on: ubuntu-22.04
     if: ${{ github.event_name == 'pull_request' && github.ref != 'refs/heads/main' }}
+    permissions:
+      pull-requests: write
+      contents: read
 
     steps:
       - name: Checkout sources
@@ -41,6 +44,7 @@ jobs:
       - uses: giraffate/clippy-action@v1
         with:
           reporter: 'github-pr-review'
+          github_token: ${{ github.token }}
 
       - name: Check cargo fmt
         run: cargo fmt --all -- --check
