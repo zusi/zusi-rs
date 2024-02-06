@@ -32,7 +32,7 @@ macro_rules! deserialize_tests {
 }
 
 fn serialize(bts: &[u8], msg: FahrpultMessage) {
-    let mut codec = ZusiProtocolCodec::<Fahrpult>::new();
+    let mut codec = ZusiProtocolCodec::<Fahrpult>::default();
     let mut output = BytesMut::new();
     codec.encode(msg, &mut output).unwrap();
 
@@ -50,7 +50,7 @@ Result:
 }
 
 fn deserialize(bts: &[u8], msg: FahrpultMessage) {
-    let mut decoder = ZusiProtocolCodec::<Fahrpult>::new();
+    let mut decoder = ZusiProtocolCodec::<Fahrpult>::default();
     let mut bts = BytesMut::from(bts);
     let result = decoder.decode(&mut bts).unwrap();
 
@@ -86,7 +86,7 @@ fn test_receive_all() {
     bts.extend_from_slice(BEISPIEL_4_BYTES);
     bts.extend_from_slice(BEISPIEL_5_BYTES);
 
-    let mut decoder = ZusiProtocolCodec::<Fahrpult>::new();
+    let mut decoder = ZusiProtocolCodec::<Fahrpult>::default();
     let mut bts = BytesMut::from(&bts[..]);
 
     fn receive_one(
@@ -109,7 +109,7 @@ fn test_receive_all() {
 
 #[test]
 fn test_send_all() {
-    let mut codec = ZusiProtocolCodec::<Fahrpult>::new();
+    let mut codec = ZusiProtocolCodec::<Fahrpult>::default();
     let mut output = BytesMut::new();
 
     codec.encode(beispiel_1_msg(), &mut output).unwrap();

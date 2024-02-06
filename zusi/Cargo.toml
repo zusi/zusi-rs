@@ -24,6 +24,11 @@ required-features = ["fahrpult"]
 name = "codec"
 required-features = ["fahrpult", "async"]
 
+[[bench]]
+name = "codec"
+harness = false
+required-features = ["fahrpult", "async"]
+
 [dependencies]
 either = "1.9"
 zusi-fahrpult = { path = "../zusi-fahrpult", optional = true, version = "0.1.2" }
@@ -38,6 +43,7 @@ nom = { version = "7", optional = true }
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "net", "rt"] }
 futures = "0.3"
+divan = "0.1"
 
 [features]
 default = ["fahrpult"]

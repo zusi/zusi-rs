@@ -12,7 +12,7 @@ use zusi_protocol::ProtocolError;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let codec = ZusiProtocolCodec::<Fahrpult>::new();
+    let codec = ZusiProtocolCodec::<Fahrpult>::default();
     let stream = TcpStream::connect("127.0.0.1:1435").await?;
     let (mut sink, rx) = codec.framed(stream).split();
 

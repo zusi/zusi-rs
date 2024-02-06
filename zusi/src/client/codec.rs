@@ -1,3 +1,4 @@
+use std::io::Write;
 use std::{io::Cursor, marker::PhantomData};
 
 use bytes::{Buf, BufMut, BytesMut};
@@ -14,15 +15,6 @@ where
     T: ClientType + Send,
 {
     phantom: PhantomData<T>,
-}
-
-impl<T> ZusiProtocolCodec<T>
-where
-    T: ClientType + Send,
-{
-    pub fn new() -> Self {
-        Self::default()
-    }
 }
 
 impl<T> Decoder for ZusiProtocolCodec<T>
@@ -58,11 +50,7 @@ where
     type Error = ProtocolError;
 
     fn encode(&mut self, item: Message<T>, dst: &mut BytesMut) -> Result<(), Self::Error> {
-        // can be optimized after following PR is merged
-        // https://github.com/tokio-rs/bytes/pull/478
-        let mut data = Vec::new();
-        item.write(&mut data)?;
-        dst.put(&*data);
+        item.write(&mut dst.writer())?;
 
         Ok(())
     }
