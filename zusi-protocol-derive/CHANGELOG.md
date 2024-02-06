@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1](https://github.com/zusi/zusi-rs/compare/zusi-protocol-derive-v0.1.0...zusi-protocol-derive-v0.1.1) - 2024-02-06
+
+### Other
+- release ([#22](https://github.com/zusi/zusi-rs/pull/22))
+
 ## [0.1.0](https://github.com/zusi/zusi-rs/releases/tag/zusi-protocol-derive-v0.1.0) - 2023-12-02
 
 ### Other
