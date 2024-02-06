@@ -16,4 +16,4 @@ nom = { version = "7", optional = true }
 
 [features]
 default = []
-parser = ["nom"]
+parser = ["dep:nom"]

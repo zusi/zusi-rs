@@ -41,8 +41,8 @@ futures = "0.3"
 
 [features]
 default = ["fahrpult"]
-fahrpult = ["zusi-fahrpult"]
-async = ["bytes", "tokio-util", "zusi-protocol/parser", "nom"]
+fahrpult = ["dep:zusi-fahrpult"]
+async = ["dep:bytes", "dep:tokio-util", "zusi-protocol/parser", "dep:nom"]
 
 [package.metadata.docs.rs]
 all-features = true
