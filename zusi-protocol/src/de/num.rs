@@ -40,3 +40,25 @@ impl_deserialize_for_num!(u64);
 impl_deserialize_for_num!(i64);
 impl_deserialize_for_num!(f32);
 impl_deserialize_for_num!(f64);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize_u8() {
+        let bts: Vec<u8> = vec![0x05];
+
+        let result: u8 = u8::deserialize(&mut &bts[..], 1).unwrap();
+
+        assert_eq!(result, 5)
+    }
+
+    #[test]
+    fn deserialize_u8_wrong_length() {
+        let bts: Vec<u8> = vec![0x05];
+
+        let _result = u8::deserialize(&mut &bts[..], 2)
+            .expect_err("memory size (1) of type u8 differs from reported length 2");
+    }
+}
