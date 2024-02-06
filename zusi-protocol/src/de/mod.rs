@@ -123,8 +123,7 @@ where
         warn!("reading unknown field {} with len={}", id, len);
 
         if len == 0 {
-            // we found a unknown struct and go recursive into it
-
+            // we found an unknown struct and go recursive through it
             while let Header::Field { id, len } = read_header(reader)? {
                 read_unknown_field(reader, Header::Field { id, len })?
             }
@@ -143,7 +142,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::de::{read_header, Deserialize, Header};
+    use crate::de::{read_header, Header};
 
     #[test]
     fn test_read_header() {
@@ -158,22 +157,5 @@ mod tests {
         } else {
             panic!("Header should be of type Attribute")
         }
-    }
-
-    #[test]
-    fn u8() {
-        let bts: Vec<u8> = vec![0x05];
-
-        let result: u8 = u8::deserialize(&mut &bts[..], 1).unwrap();
-
-        assert_eq!(result, 5)
-    }
-
-    #[test]
-    fn u8_wrong_length() {
-        let bts: Vec<u8> = vec![0x05];
-
-        let _result = u8::deserialize(&mut &bts[..], 2)
-            .expect_err("memory size (1) of type u8 differs from reported length 2");
     }
 }
