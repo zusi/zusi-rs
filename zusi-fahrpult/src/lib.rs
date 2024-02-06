@@ -26,6 +26,8 @@ pub struct Fahrpult {
     pub control: Option<Control>,
 }
 
+unsafe impl Send for Fahrpult {}
+
 impl ClientType for Fahrpult {
     const ID: u16 = 0x0002;
 }

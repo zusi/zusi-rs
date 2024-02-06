@@ -11,14 +11,14 @@ use crate::Message;
 #[derive(Default)]
 pub struct ZusiProtocolCodec<T>
 where
-    T: ClientType,
+    T: ClientType + Send,
 {
-    phantom: PhantomData<*const T>,
+    phantom: PhantomData<T>,
 }
 
 impl<T> ZusiProtocolCodec<T>
 where
-    T: ClientType,
+    T: ClientType + Send,
 {
     pub fn new() -> Self {
         Self::default()
@@ -27,7 +27,7 @@ where
 
 impl<T> Decoder for ZusiProtocolCodec<T>
 where
-    T: ClientType,
+    T: ClientType + Send,
 {
     type Item = Message<T>;
 
@@ -53,7 +53,7 @@ where
 
 impl<T> Encoder<Message<T>> for ZusiProtocolCodec<T>
 where
-    T: ClientType,
+    T: ClientType + Send,
 {
     type Error = ProtocolError;
 
