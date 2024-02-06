@@ -10,6 +10,7 @@ pub mod message;
 pub mod verbindungsaufbau;
 
 #[cfg(feature = "fahrpult")]
+#[cfg_attr(docsrs, doc(cfg(feature = "fahrpult")))]
 pub mod fahrpult {
     pub use zusi_fahrpult::*;
 }

@@ -13,7 +13,8 @@ thiserror = "1"
 log = "0.4"
 zusi-protocol-derive = { path = "../zusi-protocol-derive", version = "0.1.1" }
 nom = { version = "7", optional = true }
+either = { version = "1.9", optional = true }
 
 [features]
 default = []
-parser = ["dep:nom"]
+parser = ["dep:nom", "dep:either"]
