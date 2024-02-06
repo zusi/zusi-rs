@@ -72,7 +72,7 @@ pub enum ZusiClientError {
     #[error("TCP Client")]
     Protocol {
         #[from]
-        soruce: zusi_protocol::ProtocolError,
+        source: zusi_protocol::ProtocolError,
     },
     #[error("error code returned from server {error_code}")]
     Connect { error_code: u8 },
