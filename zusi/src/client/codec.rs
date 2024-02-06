@@ -8,7 +8,6 @@ use zusi_protocol::{ClientType, ProtocolError};
 
 use crate::Message;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "async")))]
 #[derive(Default)]
 pub struct ZusiProtocolCodec<T>
 where
@@ -17,7 +16,6 @@ where
     phantom: PhantomData<T>,
 }
 
-#[cfg_attr(docsrs, doc(cfg(feature = "async")))]
 impl<T> ZusiProtocolCodec<T>
 where
     T: ClientType + Send,

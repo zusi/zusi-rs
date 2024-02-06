@@ -1,6 +1,7 @@
 #[cfg(feature = "async")]
 mod codec;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "async")))]
 #[cfg(feature = "async")]
 pub use codec::ZusiProtocolCodec;
 
