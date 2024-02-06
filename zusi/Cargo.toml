@@ -43,3 +43,7 @@ futures = "0.3"
 default = ["fahrpult"]
 fahrpult = ["zusi-fahrpult"]
 async = ["bytes", "tokio-util", "zusi-protocol/parser", "nom"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

@@ -1,3 +1,5 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 use std::{io::Cursor, marker::PhantomData};
 
 use bytes::{Buf, BufMut, BytesMut};
@@ -8,6 +10,7 @@ use zusi_protocol::{ClientType, ProtocolError};
 
 use crate::Message;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "async")))]
 #[derive(Default)]
 pub struct ZusiProtocolCodec<T>
 where
@@ -16,6 +19,7 @@ where
     phantom: PhantomData<T>,
 }
 
+#[cfg_attr(docsrs, doc(cfg(feature = "async")))]
 impl<T> ZusiProtocolCodec<T>
 where
     T: ClientType + Send,
