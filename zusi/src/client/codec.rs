@@ -1,4 +1,3 @@
-use std::io::Write;
 use std::{io::Cursor, marker::PhantomData};
 
 use bytes::{Buf, BufMut, BytesMut};
