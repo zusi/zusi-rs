@@ -6,3 +6,6 @@ members = [
     "zusi-fahrpult",
 ]
 resolver = "2"
+
+[profile.dev.package.zusi-protocol-derive]
+opt-level = 3

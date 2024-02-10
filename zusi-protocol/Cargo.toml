@@ -19,6 +19,3 @@ either = { version = "1.10", optional = true }
 default = ["derive"]
 parser = ["dep:nom", "dep:either"]
 derive = ["dep:zusi-protocol-derive"]
-
-[profile.dev.package.zusi-protocol-derive]
-opt-level = 3
