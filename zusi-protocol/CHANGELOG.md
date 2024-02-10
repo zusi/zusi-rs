@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0](https://github.com/zusi/zusi-rs/compare/zusi-protocol-v0.1.2...zusi-protocol-v0.2.0) - 2024-02-10
+
+### Fixed
+- *(deps)* update rust crate either to 1.10
+
+### Other
+- promote parser to directory
+- refactor number serialization
+- Zusi Protocol Parser refactor
+
 ## [0.1.2](https://github.com/zusi/zusi-rs/compare/zusi-protocol-v0.1.1...zusi-protocol-v0.1.2) - 2024-02-06
 
 ### Other
