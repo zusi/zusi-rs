@@ -1,4 +1,4 @@
-use zusi_protocol_derive::{Deserialize, Serialize};
+use zusi_protocol::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 #[zusi(id = 0x0001)]

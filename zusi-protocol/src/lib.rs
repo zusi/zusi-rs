@@ -6,6 +6,9 @@ use thiserror::Error;
 pub use crate::de::Deserialize;
 pub use crate::ser::Serialize;
 
+#[cfg(feature = "derive")]
+pub use zusi_protocol_derive::{Deserialize, Serialize};
+
 pub mod de;
 pub mod ser;
 

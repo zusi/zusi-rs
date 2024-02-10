@@ -1,5 +1,4 @@
-use zusi_protocol::ClientType;
-use zusi_protocol_derive::{Deserialize, Serialize};
+use zusi_protocol::{ClientType, Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq)]
 #[zusi(id = 0x0002)]
@@ -25,8 +24,6 @@ pub struct Fahrpult {
     /// 5.3.3.7 Befehl `01 0B` - CONTROL (Client → Zusi)
     pub control: Option<Control>,
 }
-
-unsafe impl Send for Fahrpult {}
 
 impl ClientType for Fahrpult {
     const ID: u16 = 0x0002;
