@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0](https://github.com/zusi/zusi-rs/compare/zusi-v0.2.3...zusi-v0.3.0) - 2024-02-10
+
+### Added
+- optimize async message encoding
+
+### Fixed
+- *(deps)* update rust crate either to 1.10
+
+### Other
+- Zusi Protocol Parser refactor
+
 ## [0.2.3](https://github.com/zusi/zusi-rs/compare/zusi-v0.2.2...zusi-v0.2.3) - 2024-02-06
 
 ### Other

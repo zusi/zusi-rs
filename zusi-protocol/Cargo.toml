@@ -1,7 +1,7 @@
 [package]
 name = "zusi-protocol"
 description = "Contains serialization and deserialization logic for the Zusi 3 TCP-Protocol"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Jannis Schaefer <jannis@schaefer.dev>"]
 license = "MIT OR Apache-2.0"
 edition = "2021"
