@@ -30,7 +30,7 @@ harness = false
 required-features = ["fahrpult", "async"]
 
 [dependencies]
-either = "1.9"
+either = "1.10"
 zusi-fahrpult = { path = "../zusi-fahrpult", optional = true, version = "0.1.2" }
 zusi-protocol-derive = { path = "../zusi-protocol-derive", version = "0.1.1" }
 zusi-protocol = { path = "../zusi-protocol", version = "0.1.2" }
