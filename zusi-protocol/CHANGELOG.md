@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1](https://github.com/zusi/zusi-rs/compare/zusi-protocol-v0.2.0...zusi-protocol-v0.2.1) - 2024-02-10
+
+### Added
+- featuregate
+- featuregate
+
+### Other
+- shadow derive package
+
 ## [0.2.0](https://github.com/zusi/zusi-rs/compare/zusi-protocol-v0.1.2...zusi-protocol-v0.2.0) - 2024-02-10
 
 ### Fixed

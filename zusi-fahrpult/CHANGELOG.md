@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4](https://github.com/zusi/zusi-rs/compare/zusi-fahrpult-v0.1.3...zusi-fahrpult-v0.1.4) - 2024-02-10
+
+### Other
+- shadow derive package
+
 ## [0.1.3](https://github.com/zusi/zusi-rs/compare/zusi-fahrpult-v0.1.2...zusi-fahrpult-v0.1.3) - 2024-02-10
 
 ### Other
