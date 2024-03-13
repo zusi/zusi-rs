@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2](https://github.com/zusi/zusi-rs/compare/zusi-v0.3.1...zusi-v0.3.2) - 2024-03-13
+
+### Added
+- no generic parameter in connect, doc examples
+
+### Other
+- add missing docs
+
 ## [0.3.1](https://github.com/zusi/zusi-rs/compare/zusi-v0.3.0...zusi-v0.3.1) - 2024-02-10
 
 ### Other
