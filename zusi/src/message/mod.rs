@@ -1,3 +1,5 @@
+//! The module defines the [`Message<T>`] type, as well as serialization and deserialization logic for it.
+
 use std::io::{Read, Write};
 
 use either::Either;
@@ -8,6 +10,9 @@ pub use zusi_fahrpult as fahrpult;
 use zusi_protocol::{ClientType, Deserialize, ProtocolError, Serialize};
 
 #[derive(Debug, PartialEq)]
+/// A TCP message that can be sent or received.
+/// The message can be either a [`Verbindungsaufbau`] message or a message of the specific client type (i.e. [`Fahrpult`]).
+/// See [`
 pub struct Message<T>(Either<Verbindungsaufbau, T>)
 where
     T: ClientType;
@@ -16,14 +21,17 @@ impl<T> Message<T>
 where
     T: ClientType,
 {
-    pub fn receive<R: Read>(mut reader: &mut R) -> Result<Self, ProtocolError> {
+    /// Reads and deserializes a TCP message from a reader.
+    pub fn receive(mut reader: &mut impl Read) -> Result<Self, ProtocolError> {
         Self::deserialize(&mut reader, 0)
     }
 
-    pub fn write<W: Write>(&self, writer: &mut W) -> Result<(), ProtocolError> {
+    /// Serializes and writes the message to a writer.
+    pub fn write(&self, writer: &mut impl Write) -> Result<(), ProtocolError> {
         self.serialize(writer, 0)
     }
 
+    /// Returns `true` if the message is a `Verbindungsaufbau` message.
     pub fn is_verbindungsaufbau(&self) -> bool {
         matches!(self.0, Either::Left(_))
     }

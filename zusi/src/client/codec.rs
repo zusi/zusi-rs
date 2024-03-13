@@ -9,6 +9,8 @@ use zusi_protocol::{ClientType, ProtocolError};
 use crate::Message;
 
 #[derive(Default)]
+/// A codec for encoding and decoding Zusi protocol messages.
+/// See the `fahrpult_async` example for usage.
 pub struct ZusiProtocolCodec<T>
 where
     T: ClientType + Send,

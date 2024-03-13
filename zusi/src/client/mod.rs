@@ -1,3 +1,6 @@
+//! Client implementation for Zusi 3 TCP-Client.
+//! An async version for the tokio runtime is available when enabling the `async` feature.
+
 #[cfg(feature = "async")]
 mod codec;
 
@@ -12,6 +15,7 @@ use std::net::{TcpStream, ToSocketAddrs};
 use thiserror::Error;
 use zusi_protocol::{ClientType, Serialize};
 
+/// Send a Verbindungsaufbau message to the server.
 pub fn send_verbindungsaufbau<W>(
     msg: Verbindungsaufbau,
     mut writer: &mut W,
@@ -24,6 +28,7 @@ where
     Ok(())
 }
 
+/// Connect to a Zusi 3 server.
 pub fn connect<A: ToSocketAddrs, T: ClientType>(
     addr: A,
 ) -> Result<(TcpStream, AckHello), ZusiClientError> {
@@ -54,6 +59,8 @@ pub fn connect<A: ToSocketAddrs, T: ClientType>(
     Ok((stream, ack))
 }
 
+/// Receive a Verbindungsaufbau message from the server.
+/// It is safe to assert that the first message received from the server is a Verbindungsaufbau message.
 pub fn receive_verbindungsaufbau<R: Read, T: ClientType>(
     mut reader: &mut R,
 ) -> Result<Verbindungsaufbau, ZusiClientError> {
@@ -64,17 +71,13 @@ pub fn receive_verbindungsaufbau<R: Read, T: ClientType>(
 
 #[non_exhaustive]
 #[derive(Error, Debug)]
+#[allow(missing_docs)]
+/// Error type for the Zusi 3 TCP-Client.
 pub enum ZusiClientError {
     #[error("IO")]
-    Io {
-        #[from]
-        source: std::io::Error,
-    },
+    Io(#[from] std::io::Error),
     #[error("TCP Client")]
-    Protocol {
-        #[from]
-        source: zusi_protocol::ProtocolError,
-    },
+    Protocol(#[from] zusi_protocol::ProtocolError),
     #[error("error code returned from server {error_code}")]
     Connect { error_code: u8 },
     #[error("other message type as tried to receive was received")]
