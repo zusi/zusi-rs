@@ -29,8 +29,28 @@ where
 }
 
 /// Connect to a Zusi 3 server.
-pub fn connect<A: ToSocketAddrs, T: ClientType>(
-    addr: A,
+///
+/// # Example
+/// ```no_run
+/// # use zusi::client::connect;
+/// # use zusi::Message;
+/// # use zusi_fahrpult::{Fahrpult, FuehrerstandsAnzeigen, NeededData};
+/// let (mut stream, ack) = connect::<Fahrpult>("127.0.0.1:1435")?;
+/// println!("{}", ack.zusi_version);
+///
+/// // Send a message
+/// let needed_data = NeededData {
+///     fuehrerstands_anzeigen: Some(FuehrerstandsAnzeigen { anzeigen: vec![0x0001] }),
+///     ..Default::default()
+/// };
+/// let needed_data = Fahrpult { needed_data: Some(needed_data), ..Default::default() };
+/// Message::write(&needed_data.into(), &mut stream)?;
+///
+/// // Receive a message
+/// let msg: Message<Fahrpult> = Message::receive(&mut stream)?;
+/// ```
+pub fn connect<T: ClientType>(
+    addr: impl ToSocketAddrs,
 ) -> Result<(TcpStream, AckHello), ZusiClientError> {
     let mut stream = TcpStream::connect(addr)?;
 

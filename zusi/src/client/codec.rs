@@ -10,7 +10,21 @@ use crate::Message;
 
 #[derive(Default)]
 /// A codec for encoding and decoding Zusi protocol messages.
-/// See the `fahrpult_async` example for usage.
+///
+/// # Example
+/// ```no_run
+/// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// # use zusi::client::ZusiProtocolCodec;
+/// # use futures::StreamExt;
+/// # use tokio::net::TcpStream;
+/// # use tokio_util::codec::Decoder;
+/// # use zusi_fahrpult::Fahrpult;
+/// let codec = ZusiProtocolCodec::<Fahrpult>::default();
+/// let stream = TcpStream::connect("127.0.0.1:1435").await?;
+/// let (mut send, mut receive) = codec.framed(stream).split();
+/// # Ok(())
+/// }
+/// ```
 pub struct ZusiProtocolCodec<T>
 where
     T: ClientType + Send,
