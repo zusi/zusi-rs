@@ -9,5 +9,4 @@ repository = "https://github.com/zusi/zusi-rs"
 readme = "../README.md"
 
 [dependencies]
-thiserror = "1"
 zusi-protocol = { path = "../zusi-protocol", version = "0.2.1" }
