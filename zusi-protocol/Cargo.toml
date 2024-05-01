@@ -9,7 +9,7 @@ repository = "https://github.com/zusi/zusi-rs"
 readme = "../README.md"
 
 [dependencies]
-thiserror = "1"
+thiserror = "1.0.59"
 log = "0.4"
 zusi-protocol-derive = { path = "../zusi-protocol-derive", version = "0.1.2", optional = true }
 nom = { version = "7", optional = true }
