@@ -41,7 +41,7 @@ nom = { version = "7", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "net", "rt"] }
-futures = "0.3"
+futures = "0.3.30"
 divan = "0.1"
 
 [features]
