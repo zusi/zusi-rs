@@ -40,7 +40,7 @@ tokio-util = { version = "0.7", features = ["codec"], optional = true }
 nom = { version = "7", optional = true }
 
 [dev-dependencies]
-tokio = { version = "1", features = ["macros", "net", "rt"] }
+tokio = { version = "1.37.0", features = ["macros", "net", "rt"] }
 futures = "0.3"
 divan = "0.1"
 
