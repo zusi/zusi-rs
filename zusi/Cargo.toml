@@ -36,7 +36,7 @@ zusi-protocol = { path = "../zusi-protocol", version = "0.2.1" }
 thiserror = "1"
 
 bytes = { version = "1", optional = true }
-tokio-util = { version = "0.7", features = ["codec"], optional = true }
+tokio-util = { version = "0.7.11", features = ["codec"], optional = true }
 nom = { version = "7", optional = true }
 
 [dev-dependencies]
