@@ -1,7 +1,7 @@
 [package]
 name = "zusi-protocol"
 description = "Contains serialization and deserialization logic for the Zusi 3 TCP-Protocol"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Jannis Schaefer <jannis@schaefer.dev>"]
 license = "MIT OR Apache-2.0"
 edition = "2021"
@@ -11,7 +11,7 @@ readme = "../README.md"
 [dependencies]
 thiserror = "2"
 log = "0.4"
-zusi-protocol-derive = { path = "../zusi-protocol-derive", version = "0.1.2", optional = true }
+zusi-protocol-derive = { path = "../zusi-protocol-derive", version = "0.1.3", optional = true }
 nom = { version = "8", optional = true }
 either = { version = "1.11", optional = true }
 

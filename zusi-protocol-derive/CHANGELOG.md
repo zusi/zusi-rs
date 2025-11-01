@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3](https://github.com/zusi/zusi-rs/compare/zusi-protocol-derive-v0.1.2...zusi-protocol-derive-v0.1.3) - 2025-11-01
+
+### Fixed
+
+- *(deps)* update rust crate darling to 0.21
+
 ## [0.1.2](https://github.com/zusi/zusi-rs/compare/zusi-protocol-derive-v0.1.1...zusi-protocol-derive-v0.1.2) - 2024-02-10
 
 ### Other
