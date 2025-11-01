@@ -3,7 +3,7 @@ use nom::{
     branch::alt,
     bytes::streaming::{tag, take},
     number::streaming::{le_u16, le_u32},
-    IResult,
+    IResult, Parser,
 };
 
 #[derive(Debug, Default)]
@@ -26,13 +26,15 @@ pub struct Attribute {
 }
 
 pub fn read(input: &[u8]) -> IResult<&[u8], Option<AttrOrNode>> {
-    let (input, attr_or_node) = alt((node, end, attribute))(input)?;
+    let (input, attr_or_node) = alt((node, end, attribute)).parse(input)?;
 
     Ok((input, attr_or_node))
 }
 
 pub fn node(input: &[u8]) -> IResult<&[u8], Option<AttrOrNode>> {
-    let (input, _) = tag(&[0x00, 0x00, 0x00, 0x00])(input)?;
+    const HEADER: [u8; 4] = [0x00, 0x00, 0x00, 0x00];
+
+    let (input, _) = tag(&HEADER[..]).parse(input)?;
     let (input, id) = le_u16(input)?;
 
     let mut node = Node::with_id(id);
@@ -61,7 +63,9 @@ pub fn attribute(input: &[u8]) -> IResult<&[u8], Option<AttrOrNode>> {
 }
 
 pub fn end(input: &[u8]) -> IResult<&[u8], Option<AttrOrNode>> {
-    let (input, _) = tag(&[0xFF, 0xFF, 0xFF, 0xFF])(input)?;
+    const STRUCT_END: [u8; 4] = [0xFF, 0xFF, 0xFF, 0xFF];
+
+    let (input, _) = tag(&STRUCT_END[..]).parse(input)?;
 
     Ok((input, None))
 }
