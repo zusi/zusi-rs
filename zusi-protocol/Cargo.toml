@@ -12,7 +12,7 @@ readme = "../README.md"
 thiserror = "2"
 log = "0.4"
 zusi-protocol-derive = { path = "../zusi-protocol-derive", version = "0.1.2", optional = true }
-nom = { version = "7", optional = true }
+nom = { version = "8", optional = true }
 either = { version = "1.11", optional = true }
 
 [features]
