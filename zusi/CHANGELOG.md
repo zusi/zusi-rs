@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3](https://github.com/zusi/zusi-rs/compare/zusi-v0.3.2...zusi-v0.3.3) - 2025-11-01
+
+### Fixed
+
+- *(deps)* update rust crate nom to v8
+- *(deps)* update rust crate thiserror to v2
+- *(deps)* update rust crate either to 1.11
+
 ## [0.3.2](https://github.com/zusi/zusi-rs/compare/zusi-v0.3.1...zusi-v0.3.2) - 2024-03-13
 
 ### Added
